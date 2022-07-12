@@ -1,1 +1,6 @@
 /*.tgz
+Makefile.coq
+Makefile.coq.conf
+.Makefile.coq.d
+*.ml
+*.mli
