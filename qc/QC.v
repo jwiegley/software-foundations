@@ -1441,6 +1441,7 @@ Definition treeProp (g : nat -> G nat -> G (Tree nat)) n :=
     rarely with respect to their input domain). *)
 
 Open Scope bool.
+Open Scope nat_scope.
 
 (** Consider a function that inserts a natural number into a sorted list. *)
 
