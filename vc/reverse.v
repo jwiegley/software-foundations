@@ -198,7 +198,7 @@ Definition f_main := {|
 
 Definition composites : list composite_definition :=
 (Composite _list Struct
-   ((_head, tuint) :: (_tail, (tptr (Tstruct _list noattr))) :: nil)
+   ((Member_plain _head tuint) :: (Member_plain _tail (tptr (Tstruct _list noattr))) :: nil)
    noattr :: nil).
 
 Definition global_definitions : list (ident * globdef fundef type) :=

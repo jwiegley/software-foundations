@@ -191,7 +191,7 @@ Definition f_append2 := {|
 
 Definition composites : list composite_definition :=
 (Composite _list Struct
-   ((_head, tint) :: (_tail, (tptr (Tstruct _list noattr))) :: nil)
+   ((Member_plain _head tint) :: (Member_plain _tail (tptr (Tstruct _list noattr))) :: nil)
    noattr :: nil).
 
 Definition global_definitions : list (ident * globdef fundef type) :=

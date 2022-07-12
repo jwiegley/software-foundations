@@ -201,10 +201,10 @@ Definition f_exit := {|
 
 Definition composites : list composite_definition :=
 (Composite _cell Struct
-   ((_a, (tptr (Tstruct _cell noattr))) ::
-    (_b, (tptr (Tstruct _cell noattr))) ::
-    (_c, (tptr (Tstruct _cell noattr))) ::
-    (_d, (tptr (Tstruct _cell noattr))) :: nil)
+   ((Member_plain _a (tptr (Tstruct _cell noattr))) ::
+    (Member_plain _b (tptr (Tstruct _cell noattr))) ::
+    (Member_plain _c (tptr (Tstruct _cell noattr))) ::
+    (Member_plain _d (tptr (Tstruct _cell noattr))) :: nil)
    noattr :: nil).
 
 Definition global_definitions : list (ident * globdef fundef type) :=

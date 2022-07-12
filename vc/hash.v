@@ -559,11 +559,11 @@ Definition f_incrx := {|
 
 Definition composites : list composite_definition :=
 (Composite _cell Struct
-   ((_key, (tptr tschar)) :: (_count, tuint) ::
-    (_next, (tptr (Tstruct _cell noattr))) :: nil)
+   ((Member_plain _key (tptr tschar)) :: (Member_plain _count tuint) ::
+    (Member_plain _next (tptr (Tstruct _cell noattr))) :: nil)
    noattr ::
  Composite _hashtable Struct
-   ((_buckets, (tarray (tptr (Tstruct _cell noattr)) 109)) :: nil)
+   ((Member_plain _buckets (tarray (tptr (Tstruct _cell noattr)) 109)) :: nil)
    noattr :: nil).
 
 Definition global_definitions : list (ident * globdef fundef type) :=

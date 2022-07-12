@@ -299,10 +299,10 @@ Definition f_main := {|
 
 Definition composites : list composite_definition :=
 (Composite _cons Struct
-   ((_value, tint) :: (_next, (tptr (Tstruct _cons noattr))) :: nil)
+   ((Member_plain _value tint) :: (Member_plain _next (tptr (Tstruct _cons noattr))) :: nil)
    noattr ::
  Composite _stack Struct
-   ((_top, (tptr (Tstruct _cons noattr))) :: nil)
+   ((Member_plain _top (tptr (Tstruct _cons noattr))) :: nil)
    noattr :: nil).
 
 Definition global_definitions : list (ident * globdef fundef type) :=
