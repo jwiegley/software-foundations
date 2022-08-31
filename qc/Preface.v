@@ -7,9 +7,11 @@
 (** * Setup *)
 
 (** For working with this material, you will need to install
-    QuickChick.  Instructions can be found here:
+    QuickChick. For this version, we are going to be using a 
+    beta release of QuickChick-2.0 that you will need to build 
+    from source. It is available here:
 
-       {https://github.com/QuickChick/QuickChick}
+       {https://github.com/QuickChick/QuickChick/releases/tag/v.2.0+beta}
 
     The [QuickChickInterface] chapter serves as a reference
     manual for QuickChick.  The rest of the book explains its features
@@ -29,9 +31,9 @@
     title        =   "QuickChick: Property-Based Testing in Coq",
     series       =   "Software Foundations",
     volume       =   "4",
-    year         =   "2021",
+    year         =   "2022",
     publisher    =   "Electronic textbook",
-    note         =   {Version 1.2.1, \URL{http://softwarefoundations.cis.upenn.edu} },
+    note         =   {Version 1.3.1, \URL{http://softwarefoundations.cis.upenn.edu} },
     }
 *)
 
@@ -44,4 +46,4 @@
     Specification_.  Work on this volume was also supported by NSF
     grant 1421243, _Random Testing for Language Design_. *)
 
-(* 2021-08-11 15:19 *)
+(* 2022-08-27 08:36 *)

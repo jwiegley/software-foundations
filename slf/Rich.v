@@ -24,8 +24,8 @@ Implicit Types L : list val.
     - n-ary functions (bonus contents).
 
     Regarding assertions, we present a reasoning rule such that:
-    - assertions may be expressed in terms of mutable data, and possibly
-      to perform local side-effects, and
+    - assertions may access to mutable data,
+    - assertions may perform local side-effects,
     - the program remains correct whether assertions are executed or not.
 
     Regarding loops, we explain why traditional Hoare-style reasoning rules
@@ -42,8 +42,8 @@ Implicit Types L : list val.
     - tupled functions, e.g., [fun (x,y) => t] in OCaml syntax.
 
     In this chapter, we describe the first two approaches. The third
-    approach (tupled functions) involves algebraic data types, which
-    are beyond the scope of this course. *)
+    approach (tupled functions) would require product data types in
+    the source language. *)
 
 (* ================================================================= *)
 (** ** Reasoning Rule for Assertions *)
@@ -460,17 +460,17 @@ Proof using. introv M. intros H'. apply hoare_for. applys* M. Qed.
     are useful for the follow-up exercises. *)
 
 Lemma triple_for' : forall x n1 n2 t3 H Q,
-  (forall (tloop:int->trm) (i:int),
+  (forall (tloop:int->trm) (n:int),
      (forall i H' Q',
         (If i <= n2
            then (exists H1, triple (subst x i t3) H' (fun v => H1)
                          /\ triple (tloop (i+1)) H1 Q')
            else (H' ==> Q' val_unit)) ->
         triple (tloop i) H' Q') ->
-    triple (tloop i) H Q) ->
+    triple (tloop n) H Q) ->
   triple (trm_for x n1 n2 t3) H Q.
 Proof using.
-  introv M. applys M (fun i => trm_for x i n2 t3). introv K.
+  introv M. applys M (fun n => trm_for x n n2 t3). introv K.
   applys triple_for. applys triple_if_trm.
   { applys triple_conseq_frame triple_le. xsimpl. xsimpl. }
   { intros v. applys triple_hpure. intros ->. applys triple_if.
@@ -692,7 +692,7 @@ OCaml:
       let r = ref p in
       while !r != null do
         incr a;
-        r := !p.tail;
+        r := (!r).tail;
       done;
       let n = !a in
       free a;
@@ -1055,7 +1055,7 @@ Fixpoint substn (xs:list var) (vs:list val) (t:trm) : trm :=
     To formally capture all these invariants, we introduce the predicate
     [var_fixs f xs n], where [n] denotes the number of arguments the
     function is being applied to. Typically, [n] is equal to the length
-    of the list of arguments [vs]). *)
+    of the list of arguments [vs]. *)
 
 Definition var_fixs (f:var) (xs:vars) (n:nat) : Prop :=
      LibList.noduplicates (f::xs)
@@ -1193,7 +1193,7 @@ Parameter xwp_lemma_fixs : forall v0 ts vs f xs t1 H Q,
     in a smooth way consists of improving the parsing of applications.
 
     Writing an application in the form [trm_apps f (x::y::nil)] to denote
-    teh application of a function [f] to two arguments [x] and [y] is
+    the application of a function [f] to two arguments [x] and [y] is
     fairly verbose, in comparison with the syntax [f x y], which we were able
     to set up by declaring [trm_app] as a [Funclass] coercion---recall chapter
     [Rules].
@@ -1292,4 +1292,4 @@ End PrimitiveNaryFun.
     iterations, has appeared independently in work by [Charguéraud 2010] (in Bib.v)
     and [Tuerk 2010] (in Bib.v). *)
 
-(* 2021-08-11 15:25 *)
+(* 2022-08-08 17:28 *)

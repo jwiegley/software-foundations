@@ -55,11 +55,12 @@
 <span class="id" title="keyword">Set</span> <span class="id" title="var">Warnings</span> "-notation-overridden,-parsing,-deprecated-hint-without-locality".<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">Coq</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/library//Coq.Strings.String.html#"><span class="id" title="library">Strings.String</span></a>.<br/>
 <span class="id" title="keyword">From</span> <span class="id" title="var">PLF</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">Maps</span>.<br/>
-<span class="id" title="keyword">From</span> <span class="id" title="var">PLF</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Smallstep.html#"><span class="id" title="library">Smallstep</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">PLF</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Smallstep.html#"><span class="id" title="library">Smallstep</span></a>.<br/><hr class='doublespaceincode'/>
+<span class="id" title="keyword">Hint Resolve</span> <span class="id" title="var">update_eq</span> : <span class="id" title="var">core</span>.<br/>
 </div>
 
 <div class="doc">
-<a id="lab218"></a><h1 class="section">Overview</h1>
+<a id="lab213"></a><h1 class="section">Overview</h1>
 
 <div class="paragraph"> </div>
 
@@ -238,13 +239,14 @@
     The <i>types</i> of the STLC include <span class="inlinecode"><span class="id" title="var">Bool</span></span>, which classifies the
     boolean constants <span class="inlinecode"><span class="id" title="var">true</span></span> and <span class="inlinecode"><span class="id" title="var">false</span></span> as well as more complex
     computations that yield booleans, plus <i>arrow types</i> that classify
-    functions. 
-<div class="paragraph"> </div>
-
+    functions.
 <br/>
 <span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">T</span> <span style='font-size:85%;'><span style='vertical-align:5%;'><span style='letter-spacing:-.2em;'>:</span>:</span>=</span> <span class="id" title="var">Bool</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">T</span> → <span class="id" title="var">T</span>
-</span>    For example:
+</span>
+<div class="paragraph"> </div>
+
+    For example:
 
 <div class="paragraph"> </div>
 
@@ -287,7 +289,7 @@
 </div>
 
 <div class="doc">
-<a id="lab219"></a><h1 class="section">Syntax</h1>
+<a id="lab214"></a><h1 class="section">Syntax</h1>
 
 <div class="paragraph"> </div>
 
@@ -299,7 +301,7 @@
 </div>
 
 <div class="doc">
-<a id="lab220"></a><h2 class="section">Types</h2>
+<a id="lab215"></a><h2 class="section">Types</h2>
 
 </div>
 <div class="code">
@@ -310,7 +312,7 @@
 </div>
 
 <div class="doc">
-<a id="lab221"></a><h2 class="section">Terms</h2>
+<a id="lab216"></a><h2 class="section">Terms</h2>
 
 </div>
 <div class="code">
@@ -369,7 +371,7 @@ Note that an abstraction <span class="inlinecode">\<span class="id" title="var">
     not considering type inference here. 
 <div class="paragraph"> </div>
 
- Some examples... 
+ Examples... 
 </div>
 <div class="code">
 
@@ -389,7 +391,7 @@ Note that an abstraction <span class="inlinecode">\<span class="id" title="var">
 </div>
 
 <div class="doc">
-<a id="lab222"></a><h1 class="section">Operational Semantics</h1>
+<a id="lab217"></a><h1 class="section">Operational Semantics</h1>
 
 <div class="paragraph"> </div>
 
@@ -401,7 +403,7 @@ Note that an abstraction <span class="inlinecode">\<span class="id" title="var">
 </div>
 
 <div class="doc">
-<a id="lab223"></a><h2 class="section">Values</h2>
+<a id="lab218"></a><h2 class="section">Values</h2>
 
 <div class="paragraph"> </div>
 
@@ -489,7 +491,7 @@ Finally, we must consider what constitutes a <i>complete</i> program.
 </div>
 
 <div class="doc">
-<a id="lab224"></a><h2 class="section">Substitution</h2>
+<a id="lab219"></a><h2 class="section">Substitution</h2>
 
 <div class="paragraph"> </div>
 
@@ -605,10 +607,10 @@ Finally, we must consider what constitutes a <i>complete</i> program.
 <span class="id" title="keyword">Reserved Notation</span> &quot;'[' x ':=' s ']' t" (<span class="id" title="keyword">in</span> <span class="id" title="var">custom</span> <span class="id" title="var">stlc</span> <span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 20, <span class="id" title="var">x</span> <span class="id" title="keyword">constr</span>).<br/><hr class='doublespaceincode'/>
 <span class="id" title="keyword">Fixpoint</span> <a id="STLC.subst" class="idref" href="#STLC.subst"><span class="id" title="definition">subst</span></a> (<a id="x:10" class="idref" href="#x:10"><span class="id" title="binder">x</span></a> : <a class="idref" href="http://coq.inria.fr/library//Coq.Strings.String.html#string"><span class="id" title="inductive">string</span></a>) (<a id="s:11" class="idref" href="#s:11"><span class="id" title="binder">s</span></a> : <a class="idref" href="Stlc.html#STLC.tm"><span class="id" title="inductive">tm</span></a>) (<a id="t:12" class="idref" href="#t:12"><span class="id" title="binder">t</span></a> : <a class="idref" href="Stlc.html#STLC.tm"><span class="id" title="inductive">tm</span></a>) : <a class="idref" href="Stlc.html#STLC.tm"><span class="id" title="inductive">tm</span></a> :=<br/>
 &nbsp;&nbsp;<span class="id" title="keyword">match</span> <a class="idref" href="Stlc.html#t:12"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">with</span><br/>
-&nbsp;&nbsp;| <a class="idref" href="Stlc.html#STLC.tm_var"><span class="id" title="constructor">tm_var</span></a> <span class="id" title="var">y</span> ⇒<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <span class="id" title="definition">eqb_string</span> <a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a> <span class="id" title="var">y</span> <span class="id" title="keyword">then</span> <a class="idref" href="Stlc.html#s:11"><span class="id" title="variable">s</span></a> <span class="id" title="keyword">else</span> <a class="idref" href="Stlc.html#t:12"><span class="id" title="variable">t</span></a><br/>
-&nbsp;&nbsp;| <a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">\</span></a><span class="id" title="var">y</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">:</span></a><span class="id" title="var">T</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">,</span></a> <span class="id" title="var">t<sub>1</sub></span><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a> ⇒<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <span class="id" title="definition">eqb_string</span> <a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a> <span class="id" title="var">y</span> <span class="id" title="keyword">then</span> <a class="idref" href="Stlc.html#t:12"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">else</span> <a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">\</span></a><span class="id" title="var">y</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">:</span></a><span class="id" title="var">T</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">,</span></a> <a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">[</span></a><a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">:=</span></a><a class="idref" href="Stlc.html#s:11"><span class="id" title="variable">s</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">]</span></a> <span class="id" title="var">t<sub>1</sub></span><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a><br/>
+&nbsp;&nbsp;| <a class="idref" href="Stlc.html#STLC.tm_var"><span class="id" title="constructor">tm_var</span></a> <a class="idref" href="Stlc.html#STLC.y"><span class="id" title="definition">y</span></a> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="http://coq.inria.fr/library//Coq.Strings.String.html#eqb"><span class="id" title="definition">String.eqb</span></a> <a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a> <span class="id" title="var">y</span> <span class="id" title="keyword">then</span> <a class="idref" href="Stlc.html#s:11"><span class="id" title="variable">s</span></a> <span class="id" title="keyword">else</span> <a class="idref" href="Stlc.html#t:12"><span class="id" title="variable">t</span></a><br/>
+&nbsp;&nbsp;| <a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">\</span></a><a class="idref" href="Stlc.html#STLC.y"><span class="id" title="definition">y</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">:</span></a><span class="id" title="var">T</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">,</span></a> <span class="id" title="var">t<sub>1</sub></span><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">if</span> <a class="idref" href="http://coq.inria.fr/library//Coq.Strings.String.html#eqb"><span class="id" title="definition">String.eqb</span></a> <a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a> <span class="id" title="var">y</span> <span class="id" title="keyword">then</span> <a class="idref" href="Stlc.html#t:12"><span class="id" title="variable">t</span></a> <span class="id" title="keyword">else</span> <a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">\</span></a><span class="id" title="var">y</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">:</span></a><span class="id" title="var">T</span><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">,</span></a> <a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">[</span></a><a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">:=</span></a><a class="idref" href="Stlc.html#s:11"><span class="id" title="variable">s</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">]</span></a> <span class="id" title="var">t<sub>1</sub></span><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a><br/>
 &nbsp;&nbsp;| <a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><span class="id" title="var">t<sub>1</sub></span> <span class="id" title="var">t<sub>2</sub></span><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a> ⇒<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">[</span></a><a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">:=</span></a><a class="idref" href="Stlc.html#s:11"><span class="id" title="variable">s</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">]</span></a> <span class="id" title="var">t<sub>1</sub></span><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">)</span></a> <a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">[</span></a><a class="idref" href="Stlc.html#x:10"><span class="id" title="variable">x</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">:=</span></a><a class="idref" href="Stlc.html#s:11"><span class="id" title="variable">s</span></a><a class="idref" href="Stlc.html#af81635d67c091f2566d9a89993ee012"><span class="id" title="notation">]</span></a> <span class="id" title="var">t<sub>2</sub></span><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">)</span></a><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a><br/>
 &nbsp;&nbsp;| <a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">&lt;{</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'true'"><span class="id" title="notation">true</span></a><a class="idref" href="Stlc.html#eaa77420ac6a1aef5b440889c7543807"><span class="id" title="notation">}&gt;</span></a> ⇒<br/>
@@ -643,36 +645,52 @@ Note on notations: You might be wondering why we need parentheses
 <div class="doc">
 <i>Technical note</i>: Substitution becomes trickier to define if we
     consider the case where <span class="inlinecode"><span class="id" title="var">s</span></span>, the term being substituted for a
-    variable in some other term, may itself contain free variables. 
-    Since we are only interested here in defining the <span class="inlinecode"><span class="id" title="var">step</span></span> relation
-    on <i>closed</i> terms (i.e., terms like <span class="inlinecode">\<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">x</span></span> that include
-    binders for all of the variables they mention), we can sidestep this
-    extra complexity, but it must be dealt with when formalizing
-    richer languages. 
+    variable in some other term, may itself contain free variables.
+
+<div class="paragraph"> </div>
+
+    Fortunately, since we are only interested here in defining the
+    <span class="inlinecode"><span class="id" title="var">step</span></span> relation on <i>closed</i> terms (i.e., terms like <span class="inlinecode">\<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">x</span></span>
+    that include binders for all of the variables they mention), we
+    can sidestep this extra complexity, but it must be dealt with when
+    formalizing richer languages. 
 <div class="paragraph"> </div>
 
  For example, using the definition of substitution above to
-    substitute the <i>open</i> term <span class="inlinecode"><span class="id" title="var">s</span></span> <span class="inlinecode">=</span> <span class="inlinecode">\<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">r</span></span>, where <span class="inlinecode"><span class="id" title="var">r</span></span> is a <i>free</i>
-    reference to some global resource, for the variable <span class="inlinecode"><span class="id" title="var">z</span></span> in the
-    term <span class="inlinecode"><span class="id" title="var">t</span></span> <span class="inlinecode">=</span> <span class="inlinecode">\<span class="id" title="var">r</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">z</span></span>, where <span class="inlinecode"><span class="id" title="var">r</span></span> is a bound variable, we would get
-    <span class="inlinecode">\<span class="id" title="var">r</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode">\<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">r</span></span>, where the free reference to <span class="inlinecode"><span class="id" title="var">r</span></span> in <span class="inlinecode"><span class="id" title="var">s</span></span> has
-    been "captured" by the binder at the beginning of <span class="inlinecode"><span class="id" title="var">t</span></span>.
-
-<div class="paragraph"> </div>
-
-    Why would this be bad?  Because it violates the principle that the
-    names of bound variables do not matter.  For example, if we rename
-    the bound variable in <span class="inlinecode"><span class="id" title="var">t</span></span>, e.g., let <span class="inlinecode"><span class="id" title="var">t'</span></span> <span class="inlinecode">=</span> <span class="inlinecode">\<span class="id" title="var">w</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">z</span></span>, then
-    <span class="inlinecode">[<span class="id" title="var">x</span>:=<span class="id" title="var">s</span>]<span class="id" title="var">t'</span></span> is <span class="inlinecode">\<span class="id" title="var">w</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode">\<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">r</span></span>, which does not behave the
-    same as <span class="inlinecode">[<span class="id" title="var">x</span>:=<span class="id" title="var">s</span>]<span class="id" title="var">t</span></span> <span class="inlinecode">=</span> <span class="inlinecode">\<span class="id" title="var">r</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode">\<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>,</span> <span class="inlinecode"><span class="id" title="var">r</span></span>.  That is, renaming a
-    bound variable changes how <span class="inlinecode"><span class="id" title="var">t</span></span> behaves under substitution. 
+    substitute the <i>open</i> term
+<br/>
+<span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">s</span> = \<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>, <span class="id" title="var">r</span>
+</span>    (where <span class="inlinecode"><span class="id" title="var">r</span></span> is a <i>free</i> reference to some global resource) for
+    the free variable <span class="inlinecode"><span class="id" title="var">z</span></span> in the term
+<br/>
+<span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">t</span> = \<span class="id" title="var">r</span>:<span class="id" title="var">Bool</span>, <span class="id" title="var">z</span>
+</span>    where <span class="inlinecode"><span class="id" title="var">r</span></span> is a bound variable, we would get
+<br/>
+<span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<span class="id" title="var">r</span>:<span class="id" title="var">Bool</span>, \<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>, <span class="id" title="var">r</span><br/>
+[]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">where</span> <span class="id" title="var">the</span> <span class="id" title="var">free</span> <span class="id" title="var">reference</span> <span class="id" title="var">to</span> [<span class="id" title="var">r</span>] <span class="id" title="keyword">in</span> [<span class="id" title="var">s</span>] <span class="id" title="var">has</span> <span class="id" title="var">been</span> "captured" <span class="id" title="tactic">by</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">the</span> <span class="id" title="var">binder</span> <span class="id" title="tactic">at</span> <span class="id" title="var">the</span> <span class="id" title="var">beginning</span> <span class="id" title="keyword">of</span> [<span class="id" title="var">t</span>].<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Why</span> <span class="id" title="var">would</span> <span class="id" title="var">this</span> <span class="id" title="var">be</span> <span class="id" title="var">bad</span>?  <span class="id" title="var">Because</span> <span class="id" title="var">it</span> <span class="id" title="var">violates</span> <span class="id" title="var">the</span> <span class="id" title="var">principle</span> <span class="id" title="var">that</span> <span class="id" title="var">the</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">names</span> <span class="id" title="keyword">of</span> <span class="id" title="var">bound</span> <span class="id" title="var">variables</span> <span class="id" title="tactic">do</span> <span class="id" title="var">not</span> <span class="id" title="var">matter</span>. <span class="id" title="var">For</span> <span class="id" title="var">example</span>, <span class="id" title="keyword">if</span> <span class="id" title="var">we</span> <span class="id" title="tactic">rename</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">the</span> <span class="id" title="var">bound</span> <span class="id" title="var">variable</span> <span class="id" title="keyword">in</span> [<span class="id" title="var">t</span>], <span class="id" title="var">e.g</span>., <span class="id" title="keyword">let</span><br/>
+[[<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">t'</span> = \<span class="id" title="var">w</span>:<span class="id" title="var">Bool</span>, <span class="id" title="var">z</span>
+</span>    then <span class="inlinecode">[<span class="id" title="var">z</span>:=<span class="id" title="var">s</span>]<span class="id" title="var">t'</span></span> is
+<br/>
+<span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<span class="id" title="var">w</span>:<span class="id" title="var">Bool</span>, \<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>, <span class="id" title="var">r</span>
+</span>    which does not behave the same as the original substitution into t:
+<br/>
+<span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="var">z</span>:=<span class="id" title="var">s</span>]<span class="id" title="var">t</span> = \<span class="id" title="var">r</span>:<span class="id" title="var">Bool</span>, \<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>, <span class="id" title="var">r</span>
+</span>    That is, renaming a bound variable in <span class="inlinecode"><span class="id" title="var">t</span></span> changes how <span class="inlinecode"><span class="id" title="var">t</span></span> behaves
+    under substitution. 
 <div class="paragraph"> </div>
 
  See, for example, <a href="Bib.html#Aydemir-2008"><span class="inlineref">[Aydemir 2008]</span></a> for further discussion
     of this issue. 
 <div class="paragraph"> </div>
 
-<a id="lab225"></a><h4 class="section">Exercise: 3 stars, standard (substi_correct)</h4>
+<a id="lab220"></a><h4 class="section">Exercise: 3 stars, standard (substi_correct)</h4>
  The definition that we gave above uses Coq's <span class="inlinecode"><span class="id" title="keyword">Fixpoint</span></span> facility
     to define substitution as a <i>function</i>.  Suppose, instead, we
     wanted to define substitution as an inductive <i>relation</i> <span class="inlinecode"><span class="id" title="var">substi</span></span>.
@@ -698,7 +716,7 @@ Note on notations: You might be wondering why we need parentheses
 
 
 <div class="doc">
-<a id="lab226"></a><h2 class="section">Reduction</h2>
+<a id="lab221"></a><h2 class="section">Reduction</h2>
 
 <div class="paragraph"> </div>
 
@@ -727,7 +745,7 @@ Note on notations: You might be wondering why we need parentheses
 <tr class="infruleassumption">
   <td class="infrule">(\x:T<sub>2</sub>,t<sub>1</sub>) v<sub>2</sub> <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> [x:=v<sub>2</sub>]t<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">t<sub>1</sub> <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> t<sub>1</sub>'</td>
@@ -740,12 +758,12 @@ Note on notations: You might be wondering why we need parentheses
 <tr class="infruleassumption">
   <td class="infrule">t<sub>1</sub> t<sub>2</sub> <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> t<sub>1</sub>' t<sub>2</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">value v<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 <tr class="infruleassumption">
   <td class="infrule">t<sub>2</sub> <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> t<sub>2</sub>'</td>
   <td class="infrulenamecol" rowspan="3">
@@ -757,7 +775,7 @@ Note on notations: You might be wondering why we need parentheses
 <tr class="infruleassumption">
   <td class="infrule">v<sub>1</sub> t<sub>2</sub> <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> v<sub>1</sub> t<sub>2</sub>'</td>
   <td></td>
-</td>
+</tr>
 </table></center> ... plus the usual rules for conditionals:
 <center><table class="infrule">
 <tr class="infruleassumption">
@@ -771,7 +789,7 @@ Note on notations: You might be wondering why we need parentheses
 <tr class="infruleassumption">
   <td class="infrule">(if true then t<sub>1</sub> else t<sub>2</sub>) <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> t<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">&nbsp;&nbsp;</td>
@@ -784,7 +802,7 @@ Note on notations: You might be wondering why we need parentheses
 <tr class="infruleassumption">
   <td class="infrule">(if false then t<sub>1</sub> else t<sub>2</sub>) <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> t<sub>2</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">t<sub>1</sub> <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> t<sub>1</sub>'</td>
@@ -797,7 +815,7 @@ Note on notations: You might be wondering why we need parentheses
 <tr class="infruleassumption">
   <td class="infrule">(if t<sub>1</sub> then t<sub>2</sub> else t<sub>3</sub>) <span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:6%;'><span style='letter-spacing:-.2em;'>-</span><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span> (if t<sub>1</sub>' then t<sub>2</sub> else t<sub>3</sub>)</td>
   <td></td>
-</td>
+</tr>
 </table></center>
 <div class="paragraph"> </div>
 
@@ -832,7 +850,7 @@ Note on notations: You might be wondering why we need parentheses
 </div>
 
 <div class="doc">
-<a id="lab227"></a><h2 class="section">Examples</h2>
+<a id="lab222"></a><h2 class="section">Examples</h2>
 
 <div class="paragraph"> </div>
 
@@ -954,7 +972,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 </div>
 
 <div class="doc">
-<a id="lab228"></a><h4 class="section">Exercise: 2 stars, standard (step_example5)</h4>
+<a id="lab223"></a><h4 class="section">Exercise: 2 stars, standard (step_example5)</h4>
  Try to do this one both with and without <span class="inlinecode"><span class="id" title="var">normalize</span></span>. 
 </div>
 <div class="code">
@@ -974,7 +992,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 
 
 <div class="doc">
-<a id="lab229"></a><h1 class="section">Typing</h1>
+<a id="lab224"></a><h1 class="section">Typing</h1>
 
 <div class="paragraph"> </div>
 
@@ -982,7 +1000,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 </div>
 
 <div class="doc">
-<a id="lab230"></a><h2 class="section">Contexts</h2>
+<a id="lab225"></a><h2 class="section">Contexts</h2>
 
 <div class="paragraph"> </div>
 
@@ -1015,7 +1033,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 </div>
 
 <div class="doc">
-<a id="lab231"></a><h2 class="section">Typing Relation</h2>
+<a id="lab226"></a><h2 class="section">Typing Relation</h2>
 
 <div class="paragraph"> </div>
 
@@ -1031,7 +1049,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; x &#x2208; T<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">x <span class="nowrap"><span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:5%;'><span style='letter-spacing:-.2em;'>&#x22A2;</span><span style='font-size:90%;'>&gt;</span></span></span></span></span> T<sub>2</sub> ; Gamma &#x22A2; t<sub>1</sub> &#x2208; T<sub>1</sub></td>
@@ -1044,12 +1062,12 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; \x:T<sub>2</sub>,t<sub>1</sub> &#x2208; T<sub>2</sub><span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:5%;'><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span>T<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; t<sub>1</sub> &#x2208; T<sub>2</sub><span class="nowrap"><span style='font-size:85%;'><span style='vertical-align:5%;'><span style='letter-spacing:-.2em;'>-</span></span>&gt;</span></span>T<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; t<sub>2</sub> &#x2208; T<sub>2</sub></td>
   <td class="infrulenamecol" rowspan="3">
@@ -1061,7 +1079,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; t<sub>1</sub> t<sub>2</sub> &#x2208; T<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">&nbsp;&nbsp;</td>
@@ -1074,7 +1092,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; true &#x2208; Bool</td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">&nbsp;&nbsp;</td>
@@ -1087,7 +1105,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; false &#x2208; Bool</td>
   <td></td>
-</td>
+</tr>
 </table></center><center><table class="infrule">
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; t<sub>1</sub> &#x2208; Bool&nbsp;&nbsp;&nbsp;&nbsp;Gamma &#x22A2; t<sub>2</sub> &#x2208; T<sub>1</sub>&nbsp;&nbsp;&nbsp;&nbsp;Gamma &#x22A2; t<sub>3</sub> &#x2208; T<sub>1</sub></td>
@@ -1100,7 +1118,7 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 <tr class="infruleassumption">
   <td class="infrule">Gamma &#x22A2; if t<sub>1</sub> then t<sub>2</sub> else t<sub>3</sub> &#x2208; T<sub>1</sub></td>
   <td></td>
-</td>
+</tr>
 </table></center>
 <div class="paragraph"> </div>
 
@@ -1138,15 +1156,14 @@ We can use the <span class="inlinecode"><span class="id" title="var">normalize</
 </div>
 
 <div class="doc">
-<a id="lab232"></a><h2 class="section">Examples</h2>
+<a id="lab227"></a><h2 class="section">Examples</h2>
 
 </div>
 <div class="code">
 
 <span class="id" title="keyword">Example</span> <a id="STLC.typing_example_1" class="idref" href="#STLC.typing_example_1"><span class="id" title="definition">typing_example_1</span></a> :<br/>
 &nbsp;&nbsp;<span class="id" title="definition">empty</span> <a class="idref" href="Stlc.html#092ca644792e367ec17fc46e3cfd4c<sub>33</sub>"><span class="id" title="notation">&#x22A2;</span></a> <a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">\</span></a><a class="idref" href="Stlc.html#STLC.x"><span class="id" title="definition">x</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">:</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">,</span></a> <a class="idref" href="Stlc.html#STLC.x"><span class="id" title="definition">x</span></a> <a class="idref" href="Stlc.html#092ca644792e367ec17fc46e3cfd4c<sub>33</sub>"><span class="id" title="notation">\</span></a><a class="idref" href="Stlc.html#092ca644792e367ec17fc46e3cfd4c<sub>33</sub>"><span class="id" title="notation">in</span></a> <a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">)</span></a>.<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Abs"><span class="id" title="constructor">T_Abs</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Var"><span class="id" title="constructor">T_Var</span></a>. <span class="id" title="tactic">reflexivity</span>. <span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">eauto</span>. <span class="id" title="keyword">Qed</span>.<br/>
 </div>
 
 <div class="doc">
@@ -1178,18 +1195,12 @@ More examples:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">\</span></a><a class="idref" href="Stlc.html#STLC.y"><span class="id" title="definition">y</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">:</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a><a class="idref" href="Stlc.html#STLC.:stlc::x_'-&gt;'_x"><span class="id" title="notation">→</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a><a class="idref" href="Stlc.html#28c1f0fbf2e9b1fd5a138d34ed0aa145"><span class="id" title="notation">,</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#STLC.y"><span class="id" title="definition">y</span></a> <a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#STLC.y"><span class="id" title="definition">y</span></a> <a class="idref" href="Stlc.html#STLC.x"><span class="id" title="definition">x</span></a><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">))</span></a> <a class="idref" href="Stlc.html#092ca644792e367ec17fc46e3cfd4c<sub>33</sub>"><span class="id" title="notation">\</span></a><a class="idref" href="Stlc.html#092ca644792e367ec17fc46e3cfd4c<sub>33</sub>"><span class="id" title="notation">in</span></a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">(</span></a><a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">)</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Stlc.html#STLC.:stlc::'Bool'"><span class="id" title="notation">Bool</span></a><a class="idref" href="Stlc.html#356f9b00d0ca8b465f5c07428196b78a"><span class="id" title="notation">)</span></a>.<br/>
-<span class="id" title="keyword">Proof</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Abs"><span class="id" title="constructor">T_Abs</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Abs"><span class="id" title="constructor">T_Abs</span></a>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="Stlc.html#STLC.T_App"><span class="id" title="constructor">T_App</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Var"><span class="id" title="constructor">T_Var</span></a>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">update_eq</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="Stlc.html#STLC.T_App"><span class="id" title="constructor">T_App</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Var"><span class="id" title="constructor">T_Var</span></a>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">update_eq</span>.<br/>
-&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Stlc.html#STLC.T_Var"><span class="id" title="constructor">T_Var</span></a>. <span class="id" title="tactic">apply</span> <span class="id" title="lemma">update_neq</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">Contra</span>. <span class="id" title="tactic">discriminate</span>.<br/>
-<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">eauto</span> 20. <span class="id" title="keyword">Qed</span>.<br/>
 </div>
 </div>
 
 <div class="doc">
-<a id="lab233"></a><h4 class="section">Exercise: 2 stars, standard, optional (typing_example_2_full)</h4>
+<a id="lab228"></a><h4 class="section">Exercise: 2 stars, standard, optional (typing_example_2_full)</h4>
  Prove the same result without using <span class="inlinecode"><span class="id" title="tactic">auto</span></span>, <span class="inlinecode"><span class="id" title="tactic">eauto</span></span>, or
     <span class="inlinecode"><span class="id" title="tactic">eapply</span></span> (or <span class="inlinecode">...</span>). 
 </div>
@@ -1209,7 +1220,7 @@ More examples:
 <div class="doc"> 
 <div class="paragraph"> </div>
 
-<a id="lab234"></a><h4 class="section">Exercise: 2 stars, standard (typing_example_3)</h4>
+<a id="lab229"></a><h4 class="section">Exercise: 2 stars, standard (typing_example_3)</h4>
  Formally prove the following typing derivation holds:  <br/>
 <span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">empty</span> &#x22A2; \<span class="id" title="var">x</span>:<span class="id" title="var">Bool</span>→<span class="id" title="var">B</span>, \<span class="id" title="var">y</span>:<span class="id" title="var">Bool</span>→<span class="id" title="var">Bool</span>, \<span class="id" title="var">z</span>:<span class="id" title="var">Bool</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">y</span> (<span class="id" title="var">x</span> <span class="id" title="var">z</span>)<br/>
@@ -1268,7 +1279,7 @@ More examples:
 </div>
 
 <div class="doc">
-<a id="lab235"></a><h4 class="section">Exercise: 3 stars, standard, optional (typing_nonexample_3)</h4>
+<a id="lab230"></a><h4 class="section">Exercise: 3 stars, standard, optional (typing_nonexample_3)</h4>
  Another nonexample:
 <br/>
 <span class="inlinecode">&nbsp;&nbsp;&nbsp;&nbsp;¬(<span class="id" title="tactic">∃</span> <span class="id" title="var">S</span> <span class="id" title="var">T</span>,<br/>
@@ -1289,7 +1300,7 @@ More examples:
 <div class="code">
 
 <span class="id" title="keyword">End</span> <a class="idref" href="Stlc.html#STLC"><span class="id" title="module">STLC</span></a>.<br/><hr class='doublespaceincode'/>
-<span class="comment">(*&nbsp;2021-08-11&nbsp;15:11&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;2022-08-08&nbsp;17:31&nbsp;*)</span><br/>
 </div>
 </div>
 

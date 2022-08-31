@@ -400,9 +400,11 @@ From PLF Require Import Stlc.
     the first two elements of a list of numbers:
 
       \x:List Nat,
-      case x of nil   => 0
-               | a::x' => case x' of nil    => a
-                                    | b::x'' => a+b
+      case x of
+        nil   => 0
+        | a::x' => case x' of
+                     nil    => a
+                     | b::x'' => a+b
 *)
 
 (**
@@ -412,8 +414,9 @@ From PLF Require Import Stlc.
            | ...
            | nil T
            | cons t t
-           | case t of nil   => t
-                      | x::x => t
+           | case t of
+               nil     => t
+               | x::x' => t
 
        v ::=                Values
            | ...
@@ -473,17 +476,22 @@ From PLF Require Import Stlc.
     we would like to be able to define the factorial function like
     this:
 
-      fact = \x:Nat,
-                if x=0 then 1 else x * (fact (pred x)))
+      let fact = \x:Nat,
+             if x=0 then 1 else x * (fact (pred x))) in
+      fact 3.
 
-   Note that the right-hand side of this binder mentions the variable
-   being bound -- something that is not allowed by our formalization of
-   [let] above.
+   Note that the right-hand side of this binder mentions [fact], the
+   variable being bound -- something that is not allowed according
+   to the way we defined [let] above.  (The body of a [let] is
+   typechecked in the same context as the [let] itself, which means
+   that the recursive occurrence of [fact] in the body will not have
+   a type in the context when it is looked up by the [T_Var] rule.) *)
 
-   Directly formalizing this "recursive definition" mechanism is possible,
-   but it requires some extra effort: in particular, we'd have to
-   pass around an "environment" of recursive function definitions in
-   the definition of the [step] relation. *)
+(* Changing the [let] rule to handle "recursive definitions"
+   like this is possible, but it requires some extra effort -- e.g.,
+   passing around an extra "environment" of recursive function
+   definitions in the definition of the [step] relation.  We're going
+   to take a simpler path here. *)
 
 (** Here is another way of presenting recursive functions that is
     a bit more verbose but equally powerful and much more straightforward
@@ -524,10 +532,10 @@ From PLF Require Import Stlc.
         [let]-binding for [fact].
 *)
 
-(** The intuition is that the higher-order function [f] passed
-    to [fix] is a _generator_ for the [fact] function: if [f] is
-    applied to a function that "approximates" the desired behavior of
-    [fact] up to some number [n] (that is, a function that returns
+(** The intuition here is that the higher-order function [f]
+    passed to [fix] is a _generator_ for the [fact] function: if [f]
+    is applied to a function that "approximates" the desired behavior
+    of [fact] up to some number [n] (that is, a function that returns
     correct results on inputs less than or equal to [n] but we don't
     care what it does on inputs greater than [n]), then [f] returns a
     slightly better approximation to [fact] -- a function that returns
@@ -645,10 +653,6 @@ From PLF Require Import Stlc.
     6
 *)
 
-(** One important point to note is that, unlike [Fixpoint]
-    definitions in Coq, there is nothing to prevent functions defined
-    using [fix] from diverging. *)
-
 (** **** Exercise: 1 star, standard, optional (halve_fix)
 
     Translate this informal recursive definition into one using [fix]:
@@ -702,8 +706,8 @@ From PLF Require Import Stlc.
       evenodd =
         fix
           (\eo: (Nat->Bool * Nat->Bool),
-             let e = \n:Nat, if n=0 then tru else eo,snd (pred n) in
-             let o = \n:Nat, if n=0 then fls else eo,fst (pred n) in
+             let e = \n:Nat, if n=0 then tru else eo.snd (pred n) in
+             let o = \n:Nat, if n=0 then fls else eo.fst (pred n) in
              (e,o))
 
       even = evenodd.fst
@@ -903,9 +907,7 @@ From PLF Require Import Stlc.
 
 Module STLCExtended.
 
-(** **** Exercise: 3 stars, standard (STLCE_definitions)
-
-    In this series of exercises, you will formalize some of the
+(** In this series of exercises, you will formalize some of the
     extensions described in this chapter.  We've provided the
     necessary additions to the syntax of terms and types, and we've
     included a few examples that you can test your definitions with to
@@ -1082,13 +1084,15 @@ Notation "'fix' t" := (tm_fix t) (in custom stlc at level 0).
 (** *** Substitution *)
 
 Reserved Notation "'[' x ':=' s ']' t" (in custom stlc at level 20, x constr).
+
+(** **** Exercise: 3 stars, standard (STLCExtended.subst) *)
 Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
   match t with
   (* pure STLC *)
   | tm_var y =>
-      if eqb_string x y then s else t
+      if String.eqb x y then s else t
   | <{\y:T, t1}> =>
-      if eqb_string x y then t else <{\y:T, [x:=s] t1}>
+      if String.eqb x y then t else <{\y:T, [x:=s] t1}>
   | <{t1 t2}> =>
       <{([x:=s] t1) ([x:=s] t2)}>
   (* numbers *)
@@ -1109,8 +1113,8 @@ Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
       <{inr T1 ( [x:=s] t2) }>
   | <{case t0 of | inl y1 => t1 | inr y2 => t2}> =>
       <{case ([x:=s] t0) of
-         | inl y1 => { if eqb_string x y1 then t1 else <{ [x:=s] t1 }> }
-         | inr y2 => {if eqb_string x y2 then t2 else <{ [x:=s] t2 }> } }>
+         | inl y1 => { if String.eqb x y1 then t1 else <{ [x:=s] t1 }> }
+         | inr y2 => {if String.eqb x y2 then t2 else <{ [x:=s] t2 }> } }>
   (* lists *)
   | <{nil _}> =>
       t
@@ -1120,9 +1124,9 @@ Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
       <{case ( [x:=s] t1 ) of
         | nil => [x:=s] t2
         | y1 :: y2 =>
-        {if eqb_string x y1 then
+        {if String.eqb x y1 then
            t3
-         else if eqb_string x y2 then t3
+         else if String.eqb x y2 then t3
               else <{ [x:=s] t3 }> } }>
   (* unit *)
   | <{unit}> => <{unit}>
@@ -1139,6 +1143,8 @@ Fixpoint subst (x : string) (s : tm) (t : tm) : tm :=
   end
 
 where "'[' x ':=' s ']' t" := (subst x s t) (in custom stlc).
+
+(** [] *)
 
 (* ----------------------------------------------------------------- *)
 (** *** Reduction *)
@@ -1177,6 +1183,7 @@ Hint Constructors value : core.
 
 Reserved Notation "t '-->' t'" (at level 40).
 
+(** **** Exercise: 3 stars, standard (STLCExtended.step) *)
 Inductive step : tm -> tm -> Prop :=
   (* pure STLC *)
   | ST_AppAbs : forall x T2 t1 v2,
@@ -1264,6 +1271,8 @@ Inductive step : tm -> tm -> Prop :=
 
   where "t '-->' t'" := (step t t').
 
+(** [] *)
+
 Notation multistep := (multi step).
 Notation "t1 '-->*' t2" := (multistep t1 t2) (at level 40).
 
@@ -1279,6 +1288,7 @@ Definition context := partial_map ty.
 
 Reserved Notation "Gamma '|-' t '\in' T" (at level 40, t custom stlc, T custom stlc_ty at level 0).
 
+(** **** Exercise: 3 stars, standard (STLCExtended.has_type) *)
 Inductive has_type : context -> tm -> ty -> Prop :=
   (* pure STLC *)
   | T_Var : forall Gamma x T1,
@@ -1348,16 +1358,14 @@ Inductive has_type : context -> tm -> ty -> Prop :=
 
 where "Gamma '|-' t '\in' T" := (has_type Gamma t T).
 
-Hint Constructors has_type : core.
-
-(* Do not modify the following line: *)
-Definition manual_grade_for_extensions_definition : option (nat*string) := None.
 (** [] *)
+
+Hint Constructors has_type : core.
 
 (* ================================================================= *)
 (** ** Examples *)
 
-(** **** Exercise: 3 stars, standard (STLCE_examples)
+(** **** Exercise: 5 stars, standard, optional (STLCExtended_examples)
 
     This section presents formalized versions of the examples from
     above (plus several more).
@@ -1382,8 +1390,6 @@ Module Examples.
 (** First, let's define a few variable names: *)
 
 Open Scope string_scope.
-(*  NOTATION: LATER: These can all be Notations -- just make sure to add a
-   [Hint Unfold] for each one. *)
 Notation x := "x".
 Notation y := "y".
 Notation a := "a".
@@ -1429,7 +1435,7 @@ Hint Extern 2 (_ = _) => compute; reflexivity : core.
 Module Numtest.
 
 (* tm_test0 (pred (succ (pred (2 * 0))) then 5 else 6 *)
-Definition test :=
+Definition tm_test :=
   <{if0
     (pred
       (succ
@@ -1439,20 +1445,20 @@ Definition test :=
     else 6}>.
 
 Example typechecks :
-  empty |- test \in Nat.
+  empty |- tm_test \in Nat.
 Proof.
-  unfold test.
+  unfold tm_test.
   (* This typing derivation is quite deep, so we need
      to increase the max search depth of [auto] from the
      default 5 to 10. *)
   auto 10.
 (* FILL IN HERE *) Admitted.
 
-Example numtest_reduces :
-  test -->* 5.
+Example reduces :
+  tm_test -->* 5.
 Proof.
 (* 
-  unfold test. normalize.
+  unfold tm_test. normalize.
 *)
 (* FILL IN HERE *) Admitted.
 
@@ -1461,27 +1467,25 @@ End Numtest.
 (* ----------------------------------------------------------------- *)
 (** *** Products *)
 
-Module Prodtest.
+Module ProdTest.
 
 (* ((5,6),7).fst.tm_snd *)
-Definition test :=
+Definition tm_test :=
   <{((5,6),7).fst.snd}>.
 
 Example typechecks :
-  empty |- test \in Nat.
-Proof. unfold test. eauto 15. (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: typechecks *)
+  empty |- tm_test \in Nat.
+Proof. unfold tm_test. eauto 15. (* FILL IN HERE *) Admitted.
 
 Example reduces :
-  test -->* 6.
+  tm_test -->* 6.
 Proof.
 (* 
-  unfold test. normalize.
+  unfold tm_test. normalize.
 *)
 (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: reduces *)
 
-End Prodtest.
+End ProdTest.
 
 (* ----------------------------------------------------------------- *)
 (** *** [let] *)
@@ -1489,23 +1493,22 @@ End Prodtest.
 Module LetTest.
 
 (* let x = pred 6 in succ x *)
-Definition test :=
+Definition tm_test :=
   <{let x = (pred 6) in
     (succ x)}>.
 
 Example typechecks :
-  empty |- test \in Nat.
-Proof. unfold test. eauto 15. (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: typechecks *)
+  empty |- tm_test \in Nat.
+Proof. unfold tm_test. eauto 15.
+(* FILL IN HERE *) Admitted.
 
 Example reduces :
-  test -->* 6.
+  tm_test -->* 6.
 Proof.
 (* 
-  unfold test. normalize.
+  unfold tm_test. normalize.
 *)
 (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: reduces *)
 
 End LetTest.
 
@@ -1514,24 +1517,20 @@ End LetTest.
 
 Module Sumtest1.
 
-(* case (inl Nat 5) of
-     inl x => x
-   | inr y => y *)
-
-Definition test :=
+Definition tm_test :=
   <{case (inl Nat 5) of
     | inl x => x
     | inr y => y}>.
 
 Example typechecks :
-  empty |- test \in Nat.
-Proof. unfold test. eauto 15. (* FILL IN HERE *) Admitted.
+  empty |- tm_test \in Nat.
+Proof. unfold tm_test. eauto 15. (* FILL IN HERE *) Admitted.
 
 Example reduces :
-  test -->* 5.
+  tm_test -->* 5.
 Proof.
 (* 
-  unfold test. normalize.
+  unfold tm_test. normalize.
 *)
 (* FILL IN HERE *) Admitted.
 
@@ -1546,7 +1545,7 @@ Module Sumtest2.
           inr n => tm_test0 n then 1 else 0 in
    (processSum (inl Nat 5), processSum (inr Nat 5))    *)
 
-Definition test :=
+Definition tm_test :=
   <{let processSum =
     (\x:Nat + Nat,
       case x of
@@ -1555,14 +1554,14 @@ Definition test :=
     (processSum (inl Nat 5), processSum (inr Nat 5))}>.
 
 Example typechecks :
-  empty |- test \in (Nat * Nat).
-Proof. unfold test. eauto 15. (* FILL IN HERE *) Admitted.
+  empty |- tm_test \in (Nat * Nat).
+Proof. unfold tm_test. eauto 15. (* FILL IN HERE *) Admitted.
 
 Example reduces :
-  test -->* <{(5, 0)}>.
+  tm_test -->* <{(5, 0)}>.
 Proof.
 (* 
-  unfold test. normalize.
+  unfold tm_test. normalize.
 *)
 (* FILL IN HERE *) Admitted.
 
@@ -1578,21 +1577,21 @@ Module ListTest.
      nil => 0
    | x::y => x*x *)
 
-Definition test :=
+Definition tm_test :=
   <{let l = (5 :: 6 :: (nil Nat)) in
     case l of
     | nil => 0
     | x :: y => (x * x)}>.
 
 Example typechecks :
-  empty |- test \in Nat.
-Proof. unfold test. eauto 20. (* FILL IN HERE *) Admitted.
+  empty |- tm_test \in Nat.
+Proof. unfold tm_test. eauto 20. (* FILL IN HERE *) Admitted.
 
 Example reduces :
-  test -->* 25.
+  tm_test -->* 25.
 Proof.
 (* 
-  unfold test. normalize.
+  unfold tm_test. normalize.
 *)
 (* FILL IN HERE *) Admitted.
 
@@ -1619,7 +1618,6 @@ Definition fact :=
 Example typechecks :
   empty |- fact \in (Nat -> Nat).
 Proof. unfold fact. auto 10. (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: typechecks *)
 
 Example reduces :
   <{fact 4}> -->* 24.
@@ -1628,7 +1626,6 @@ Proof.
   unfold fact. normalize.
 *)
 (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: reduces *)
 
 End FixTest1.
 
@@ -1655,7 +1652,6 @@ Example typechecks :
   empty |- map \in
     ((Nat -> Nat) -> ((List Nat) -> (List Nat))).
 Proof. unfold map. auto 10. (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: typechecks *)
 
 Example reduces :
   <{map (\a:Nat, succ a) (1 :: 2 :: (nil Nat))}>
@@ -1665,7 +1661,6 @@ Proof.
   unfold map. normalize.
 *)
 (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: reduces *)
 
 End FixTest2.
 
@@ -1691,7 +1686,6 @@ Definition equal :=
 Example typechecks :
   empty |- equal \in (Nat -> Nat -> Nat).
 Proof. unfold equal. auto 10. (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: typechecks *)
 
 Example reduces :
   <{equal 4 4}> -->* 1.
@@ -1709,6 +1703,7 @@ Proof.
   unfold equal. normalize.
 *)
 (* FILL IN HERE *) Admitted.
+(* GRADE_THEOREM 0.25: reduces2 *)
 
 End FixTest3.
 
@@ -1738,19 +1733,16 @@ Definition eotest :=
 Example typechecks :
   empty |- eotest \in (Nat * Nat).
 Proof. unfold eotest. eauto 30. (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: typechecks *)
 
 Example reduces :
   eotest -->* <{(0, 1)}>.
 Proof.
 (* 
-  unfold eotest. normalize.
+  unfold eotest. eauto 10. normalize.
 *)
 (* FILL IN HERE *) Admitted.
-(* GRADE_THEOREM 0.25: reduces *)
 
 End FixTest4.
-
 End Examples.
 (** [] *)
 
@@ -1764,7 +1756,7 @@ End Examples.
 (* ----------------------------------------------------------------- *)
 (** *** Progress *)
 
-(** **** Exercise: 3 stars, standard (STLCE_progress)
+(** **** Exercise: 3 stars, standard (STLCExtended.progress)
 
     Complete the proof of [progress].
 
@@ -1773,7 +1765,6 @@ End Examples.
       2. t --> t' for some t'.
 
     Proof: By induction on the given typing derivation. *)
-
 Theorem progress : forall t T,
      empty |- t \in T ->
      value t \/ exists t', t --> t'.
@@ -1924,8 +1915,6 @@ Proof with eauto.
   (* FILL IN HERE *)
 (* FILL IN HERE *) Admitted.
 
-(* Do not modify the following line: *)
-Definition manual_grade_for_progress : option (nat*string) := None.
 (** [] *)
 
 (* ================================================================= *)
@@ -1936,13 +1925,13 @@ Definition manual_grade_for_progress : option (nat*string) := None.
     search depth of eauto to 7.) *)
 
 Lemma weakening : forall Gamma Gamma' t T,
-     inclusion Gamma Gamma' ->
+     includedin Gamma Gamma' ->
      Gamma  |- t \in T  ->
      Gamma' |- t \in T.
 Proof.
   intros Gamma Gamma' t T H Ht.
   generalize dependent Gamma'.
-  induction Ht; eauto 7 using inclusion_update.
+  induction Ht; eauto 7 using includedin_update.
 Qed.
 
 Lemma weakening_empty : forall Gamma t T,
@@ -1957,7 +1946,7 @@ Qed.
 (* ----------------------------------------------------------------- *)
 (** *** Substitution *)
 
-(** **** Exercise: 2 stars, standard (STLCE_subst_preserves_typing)
+(** **** Exercise: 2 stars, standard (STLCExtended.substitution_preserves_typing)
 
     Complete the proof of [substitution_preserves_typing]. *)
 
@@ -1978,7 +1967,7 @@ Proof with eauto.
   (* in each case, we'll want to get at the derivation of H *)
     inversion H; clear H; subst; simpl; eauto.
   - (* var *)
-    rename s into y. destruct (eqb_stringP x y); subst.
+    rename s into y. destruct (eqb_spec x y); subst.
     + (* x=y *)
       rewrite update_eq in H2.
       injection H2 as H2; subst.
@@ -1987,7 +1976,7 @@ Proof with eauto.
       apply T_Var. rewrite update_neq in H2; auto.
   - (* abs *)
     rename s into y, t into S.
-    destruct (eqb_stringP x y); subst; apply T_Abs.
+    destruct (eqb_spec x y); subst; apply T_Abs.
     + (* x=y *)
       rewrite update_shadow in H5. assumption.
     + (* x<>y *)
@@ -1998,14 +1987,14 @@ Proof with eauto.
     rename s into x1, s0 into x2.
     eapply T_Case...
     + (* left arm *)
-      destruct (eqb_stringP x x1); subst.
+      destruct (eqb_spec x x1); subst.
       * (* x = x1 *)
         rewrite update_shadow in H8. assumption.
       * (* x <> x1 *)
         apply IHt2.
         rewrite update_permute; auto.
     + (* right arm *)
-      destruct (eqb_stringP x x2); subst.
+      destruct (eqb_spec x x2); subst.
       * (* x = x2 *)
         rewrite update_shadow in H9. assumption.
       * (* x <> x2 *)
@@ -2014,9 +2003,9 @@ Proof with eauto.
   - (* tm_lcase *)
     rename s into y1, s0 into y2.
     eapply T_Lcase...
-    destruct (eqb_stringP x y1); subst.
+    destruct (eqb_spec x y1); subst.
     + (* x=y1 *)
-      destruct (eqb_stringP y2 y1); subst.
+      destruct (eqb_spec y2 y1); subst.
       * (* y2=y1 *)
         repeat rewrite update_shadow in H9.
         rewrite update_shadow.
@@ -2025,7 +2014,7 @@ Proof with eauto.
         rewrite update_shadow in H9.
         rewrite update_permute;  assumption.
     + (* x<>y1 *)
-      destruct (eqb_stringP x y2); subst.
+      destruct (eqb_spec x y2); subst.
       * (* x=y2 *)
         rewrite update_shadow in H9.
         assumption.
@@ -2039,14 +2028,12 @@ Proof with eauto.
 
   (* FILL IN HERE *) Admitted.
 
-(* Do not modify the following line: *)
-Definition manual_grade_for_substitution_preserves_typing : option (nat*string) := None.
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
 (** *** Preservation *)
 
-(** **** Exercise: 3 stars, standard (STLCE_preservation)
+(** **** Exercise: 3 stars, standard (STLCExtended.preservation)
 
     Complete the proof of [preservation]. *)
 
@@ -2091,10 +2078,8 @@ Proof with eauto.
   (* FILL IN HERE *)
 (* FILL IN HERE *) Admitted.
 
-(* Do not modify the following line: *)
-Definition manual_grade_for_preservation : option (nat*string) := None.
 (** [] *)
 
 End STLCExtended.
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)

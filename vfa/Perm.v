@@ -17,6 +17,16 @@
     In later chapters, we'll apply these proof techniques to reasoning
     about algorithms and data structures. *)
 
+(* ################################################################# *)
+(** * The Coq Standard Library *)
+
+(** In this volume, we're going to import the definitions and theorems
+    we need directly from Coq's standard library, rather than from
+    chapters in Volume 1.  You should not notice much difference,
+    though, because we've been careful to name our own definitions and
+    theorems the same as their counterparts in the standard
+    library. *)
+
 Set Warnings "-notation-overridden,-parsing,-deprecated-hint-without-locality".
 From Coq Require Import Strings.String.  (* for manual grading *)
 From Coq Require Export Bool.Bool.
@@ -30,11 +40,11 @@ From Coq Require Export Permutation.
 (* ################################################################# *)
 (** * The Less-Than Order on the Natural Numbers *)
 
-(** In our proofs about searching and sorting algorithms, we often
-    have to reason about the less-than order on natural numbers.
-    greater-than. Recall that the Coq standard library contains both
-    propositional and Boolean less-than operators on natural numbers.
-    We write [x < y] for the proposition that [x] is less than [y]: *)
+(** In our proofs about searching and sorting algorithms, we
+    often have to reason about the less-than order on natural numbers.
+    Recall that the Coq standard library contains both propositional
+    and Boolean less-than operators on natural numbers.  We write [x <
+    y] for the proposition that [x] is less than [y]: *)
 
 Locate "_ < _". (* "x < y" := lt x y *)
 Check lt : nat -> nat -> Prop.
@@ -55,13 +65,16 @@ Check Nat.ltb_lt : forall n m : nat, (n <? m) = true <-> n < m.
 
 Print Nat.lt. (* Nat.lt = lt *)
 
-(** For unknown reasons, [Nat] does not define notations
-    for [>?] or [>=?].  So we define them here: *)
+(** For unknown reasons, [Nat] does not define [>=?] or [>?].  So we
+    define them here: *)
 
-Notation  "a >=? b" := (Nat.leb b a)
-                          (at level 70) : nat_scope.
-Notation  "a >? b"  := (Nat.ltb b a)
-                         (at level 70) : nat_scope.
+Definition geb (n m : nat) := m <=? n.
+Hint Unfold geb : core.
+Infix ">=?" := geb (at level 70) : nat_scope.
+
+Definition gtb (n m : nat) := m <? n.
+Hint Unfold gtb : core.
+Infix ">?" := gtb (at level 70) : nat_scope.
 
 (* ================================================================= *)
 (** ** The Lia Tactic *)
@@ -184,8 +197,8 @@ Theorem maybe_swap_idempotent: forall al,
     maybe_swap (maybe_swap al) = maybe_swap al.
 Proof.
   intros [ | a [ | b al]]; simpl; try reflexivity.
-  destruct (b <? a) eqn:Hb_lt_a; simpl.
-  - destruct (a <? b) eqn:Ha_lt_b; simpl.
+  destruct (a >? b) eqn:H1; simpl.
+  - destruct (b >? a) eqn:H2; simpl.
     + (** Now what?  We have a contradiction in the hypotheses: it
           cannot hold that [a] is less than [b] and [b] is less than
           [a].  Unfortunately, [lia] cannot immediately show that
@@ -240,6 +253,18 @@ Proof.
 Qed.
 
 Lemma leb_reflect : forall x y, reflect (x <= y) (x <=? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.leb_le.
+Qed.
+
+Lemma gtb_reflect : forall x y, reflect (x > y) (x >? y).
+Proof.
+  intros x y. apply iff_reflect. symmetry.
+  apply Nat.ltb_lt.
+Qed.
+
+Lemma geb_reflect : forall x y, reflect (x >= y) (x >=? y).
 Proof.
   intros x y. apply iff_reflect. symmetry.
   apply Nat.leb_le.
@@ -303,7 +328,7 @@ Qed.
     We call it [bdestruct], because we'll use it in our
     boolean-destruction tactic: *)
 
-Hint Resolve ltb_reflect leb_reflect eqb_reflect : bdestruct.
+Hint Resolve ltb_reflect leb_reflect gtb_reflect geb_reflect eqb_reflect : bdestruct.
 
 (** Here is the tactic, the body of which you do not need to
     understand.  Invoking [bdestruct] on Boolean expression [b] does
@@ -315,7 +340,7 @@ Ltac bdestruct X :=
   let H := fresh in let e := fresh "e" in
    evar (e: Prop);
    assert (H: reflect e X); subst e;
-    [eauto with bdestruct
+    [ auto with bdestruct
     | destruct H as [H|H];
        [ | try first [apply not_lt in H | apply not_le in H]]].
 
@@ -340,7 +365,7 @@ Theorem maybe_swap_idempotent: forall al,
 Proof.
   intros [ | a [ | b al]]; simpl; try reflexivity.
   bdestruct (a >? b); simpl.
-  (** Note how [b < a] is a hypothesis, rather than [b <? a = true]. *)
+  (** Note how [a > b] is a hypothesis, rather than [a >? b = true]. *)
   - bdestruct (b >? a); simpl.
     + (** [lia] can take care of the contradictory propositional inequalities. *)
       lia.
@@ -432,7 +457,7 @@ Proof.
   intros.
   (** Let's group [[u;t;t;e;r]] together on both sides.  Tactic
       [change t with u] replaces [t] with [u].  Terms [t] and [u] must
-      be _convertible_, here meaning that they evalute to the same
+      be _convertible_, here meaning that they evaluate to the same
       term. *)
   change [b;u;t;t;e;r] with ([b]++[u;t;t;e;r]).
   change [f;l;u;t;t;e;r] with ([f;l]++[u;t;t;e;r]).
@@ -489,8 +514,8 @@ Qed.
     Use the permutation rules in the library to prove the following
     theorem.  The following [Check] commands are a hint about useful
     lemmas.  You don't need all of them, and depending on your
-    approach you will find lemmas to be more useful than others. Use
-    [Search Permutation] to find others, if you like. *)
+    approach you will find some lemmas to be more useful than others.
+    Use [Search] to find others, if you like. *)
 
 Check perm_skip.
 Check perm_trans.
@@ -534,7 +559,7 @@ Proof.
   destruct al as [ | a [ | b al]].
   - simpl. apply perm_nil.
   - apply Permutation_refl.
-  - bdestruct (b <? a).
+  - bdestruct (a >? b).
     + apply perm_swap.
     + apply Permutation_refl.
 Qed.
@@ -561,31 +586,19 @@ Proof.
 Qed.
 
 (* ################################################################# *)
-(** * Summary: Comparisons and Permutations *)
-
-(** To prove correctness of algorithms for sorting and searching,
-    we'll reason about comparisons and permutations using the tools
-    developed in this chapter.  The [maybe_swap] program is a tiny
-    little example of a sorting program.  The proof style in
-    [maybe_swap_correct] will be applied (at a larger scale) in
-    the next few chapters. *)
-
-(** **** Exercise: 3 stars, standard (Forall_perm)
-
-    To close, we define a utility tactic and lemma.  First, the
-    tactic. *)
+(** * An Inversion Tactic *)
 
 (** Coq's [inversion H] tactic is so good at extracting
     information from the hypothesis [H] that [H] sometimes becomes
     completely redundant, and one might as well [clear] it from the
     goal.  Then, since the [inversion] typically creates some equality
-    facts, why not then [subst] ?  Tactic [inv] does just that. *)
+    facts, why not [subst]?  Tactic [inv] does just that. *)
 
 Ltac inv H := inversion H; clear H; subst.
 
-(** Second, the lemma.  You will find [inv] useful in proving it.
+(** **** Exercise: 3 stars, standard (Forall_perm) *)
 
-    [Forall] is Coq library's version of the [All] proposition defined
+(** [Forall] is Coq library's version of the [All] proposition defined
     in [Logic], but defined as an inductive proposition rather
     than a fixpoint.  Prove this lemma by induction.  You will need to
     decide what to induct on: [al], [bl], [Permutation al bl], and
@@ -598,4 +611,14 @@ Proof.
   (* FILL IN HERE *) Admitted.
 (** [] *)
 
-(* 2021-08-11 15:15 *)
+(* ################################################################# *)
+(** * Summary: Comparisons and Permutations *)
+
+(** To prove correctness of algorithms for sorting and searching,
+    we'll reason about comparisons and permutations using the tools
+    developed in this chapter.  The [maybe_swap] program is a tiny
+    little example of a sorting program.  The proof style in
+    [maybe_swap_correct] will be applied (at a larger scale) in
+    the next few chapters. *)
+
+(* 2022-08-08 17:36 *)

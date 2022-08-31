@@ -46,6 +46,7 @@ Import ListNotations.
 
 From PLF Require Import Smallstep.
 From PLF Require Import Imp.
+
 (* ################################################################# *)
 (** * Generalizing Constant Folding *)
 
@@ -79,7 +80,7 @@ Definition pe_state := list (string * nat).
 Fixpoint pe_lookup (pe_st : pe_state) (V:string) : option nat :=
   match pe_st with
   | [] => None
-  | (V',n')::pe_st => if eqb_string V V' then Some n'
+  | (V',n')::pe_st => if String.eqb V V' then Some n'
                       else pe_lookup pe_st V
   end.
 
@@ -95,13 +96,13 @@ Definition empty_pe_state : pe_state := [].
 
       compare V V'
 
-    means to reason by cases over [eqb_string V V'].
+    means to reason by cases over [String.eqb V V'].
     In the case where [V = V'], the tactic
     substitutes [V] for [V'] throughout. *)
 
 Tactic Notation "compare" ident(i) ident(j) :=
   let H := fresh "Heq" i j in
-  destruct (eqb_stringP i j);
+  destruct (String.eqb_spec i j) as [H|H];
   [ subst j | ].
 
 Theorem pe_domain: forall pe_st V n,
@@ -282,6 +283,13 @@ Proof. reflexivity. Qed.
     a [pe_state], its behavior is defined entirely by the [pe_lookup]
     interpretation of the [pe_state]. *)
 
+(* A handy consequence of [eqb_neq] *)
+Theorem false_eqb_string : forall x y : string,
+   x <> y -> String.eqb x y = false.
+Proof.
+  intros x y. rewrite String.eqb_neq.
+  intros H. apply H. Qed.
+
 Theorem pe_update_correct: forall st pe_st V0,
   pe_update st pe_st V0 =
   match pe_lookup pe_st V0 with
@@ -290,7 +298,7 @@ Theorem pe_update_correct: forall st pe_st V0,
   end.
 Proof. intros. induction pe_st as [| [V n] pe_st]. reflexivity.
   simpl in *. unfold t_update.
-  compare V0 V; auto. rewrite <- eqb_string_refl; auto. rewrite false_eqb_string; auto. Qed.
+  compare V0 V; auto. rewrite String.eqb_refl; auto. rewrite false_eqb_string; auto. Qed.
 
 (** We can relate [pe_consistent] to [pe_update] in two ways.
     First, overriding a state with a partial state always gives a
@@ -339,9 +347,9 @@ Qed.
 (* ================================================================= *)
 (** ** Boolean Expressions *)
 
-(** The partial evaluation of boolean expressions is similar.  In
+(** The partial evaluation of boolean expressions is similar.  (In
     fact, it is entirely analogous to the constant folding of boolean
-    expressions, because our language has no boolean variables. *)
+    expressions, because our language has no boolean variables.) *)
 
 Fixpoint pe_bexp (pe_st : pe_state) (b : bexp) : bexp :=
   match b with
@@ -352,10 +360,20 @@ Fixpoint pe_bexp (pe_st : pe_state) (b : bexp) : bexp :=
       | (ANum n1, ANum n2) => if n1 =? n2 then <{ true }> else <{ false }>
       | (a1', a2') => <{ a1' = a2' }>
       end
+  | <{ a1 <> a2 }> =>
+      match (pe_aexp pe_st a1, pe_aexp pe_st a2) with
+      | (ANum n1, ANum n2) => if negb (n1 =? n2) then <{ true }> else <{ false }>
+      | (a1', a2') => <{ a1' <> a2' }>
+      end
   | <{ a1 <= a2 }> =>
       match (pe_aexp pe_st a1, pe_aexp pe_st a2) with
       | (ANum n1, ANum n2) => if n1 <=? n2 then <{ true }> else <{ false }>
       | (a1', a2') => <{ a1' <= a2' }>
+      end
+  | <{ a1 > a2 }> =>
+      match (pe_aexp pe_st a1, pe_aexp pe_st a2) with
+      | (ANum n1, ANum n2) => if n1 <=? n2 then <{ false }> else <{ true }>
+      | (a1', a2') => <{ a1' > a2' }>
       end
   | <{ ~ b1 }> =>
       match (pe_bexp pe_st b1) with
@@ -476,18 +494,18 @@ Qed.
 Fixpoint pe_remove (pe_st:pe_state) (V:string) : pe_state :=
   match pe_st with
   | [] => []
-  | (V',n')::pe_st => if eqb_string V V' then pe_remove pe_st V
+  | (V',n')::pe_st => if String.eqb V V' then pe_remove pe_st V
                       else (V',n') :: pe_remove pe_st V
   end.
 
 Theorem pe_remove_correct: forall pe_st V V0,
   pe_lookup (pe_remove pe_st V) V0
-  = if eqb_string V V0 then None else pe_lookup pe_st V0.
+  = if String.eqb V V0 then None else pe_lookup pe_st V0.
 Proof. intros pe_st V V0. induction pe_st as [| [V' n'] pe_st].
-  - (* [] *) destruct (eqb_string V V0); reflexivity.
+  - (* [] *) destruct (String.eqb V V0); reflexivity.
   - (* :: *) simpl. compare V V'.
     + (* equal *) rewrite IHpe_st.
-      destruct (eqb_stringP V V0).  reflexivity.
+      destruct (String.eqb_spec V V0).  reflexivity.
       rewrite false_eqb_string; auto.
     + (* not equal *) simpl. compare V0 V'.
       * (* equal *) rewrite false_eqb_string; auto.
@@ -499,10 +517,10 @@ Definition pe_add (pe_st:pe_state) (V:string) (n:nat) : pe_state :=
 
 Theorem pe_add_correct: forall pe_st V n V0,
   pe_lookup (pe_add pe_st V n) V0
-  = if eqb_string V V0 then Some n else pe_lookup pe_st V0.
+  = if String.eqb V V0 then Some n else pe_lookup pe_st V0.
 Proof. intros pe_st V n V0. unfold pe_add. simpl.
   compare V V0.
-  - (* equal *) rewrite <- eqb_string_refl; auto.
+  - (* equal *) rewrite String.eqb_refl; auto.
   - (* not equal *) rewrite pe_remove_correct.
     repeat rewrite false_eqb_string; auto.
 Qed.
@@ -516,7 +534,7 @@ Theorem pe_update_update_remove: forall st pe_st V n,
   pe_update (t_update st V n) (pe_remove pe_st V).
 Proof. intros st pe_st V n. apply functional_extensionality.
   intros V0. unfold t_update. rewrite !pe_update_correct.
-  rewrite pe_remove_correct. destruct (eqb_string V V0); reflexivity.
+  rewrite pe_remove_correct. destruct (String.eqb V V0); reflexivity.
   Qed.
 
 Theorem pe_update_update_add: forall st pe_st V n,
@@ -524,7 +542,7 @@ Theorem pe_update_update_add: forall st pe_st V n,
   pe_update st (pe_add pe_st V n).
 Proof. intros st pe_st V n. apply functional_extensionality. intros V0.
   unfold t_update. rewrite !pe_update_correct. rewrite pe_add_correct.
-  destruct (eqb_string V V0); reflexivity. Qed.
+  destruct (String.eqb V V0); reflexivity. Qed.
 
 (* ================================================================= *)
 (** ** Conditional *)
@@ -605,7 +623,7 @@ Fixpoint pe_unique (l : list string) : list string :=
   match l with
   | [] => []
   | x::l =>
-      x :: filter (fun y => if eqb_string x y then false else true) (pe_unique l)
+      x :: filter (fun y => if String.eqb x y then false else true) (pe_unique l)
   end.
 
 Theorem pe_unique_correct: forall l x,
@@ -615,7 +633,7 @@ Proof. intros l x. induction l as [| h t]. reflexivity.
   - (* -> *)
     intros. inversion H; clear H.
       left. assumption.
-      destruct (eqb_stringP h x).
+      destruct (String.eqb_spec h x).
          left.  assumption.
          right.  apply filter_In. split.
            apply IHt. assumption.
@@ -677,11 +695,11 @@ Fixpoint pe_removes (pe_st:pe_state) (ids : list string) : pe_state :=
 
 Theorem pe_removes_correct: forall pe_st ids V,
   pe_lookup (pe_removes pe_st ids) V =
-  if inb eqb_string V ids then None else pe_lookup pe_st V.
+  if inb String.eqb V ids then None else pe_lookup pe_st V.
 Proof. intros pe_st ids V. induction ids as [| V' ids]. reflexivity.
   simpl. rewrite pe_remove_correct. rewrite IHids.
   compare V' V.
-  - rewrite <- eqb_string_refl. reflexivity.
+  - rewrite String.eqb_refl. reflexivity.
   - rewrite false_eqb_string; try congruence. reflexivity.
 Qed.
 
@@ -690,7 +708,7 @@ Theorem pe_compare_removes: forall pe_st1 pe_st2 V,
   pe_lookup (pe_removes pe_st2 (pe_compare pe_st1 pe_st2)) V.
 Proof.
   intros pe_st1 pe_st2 V. rewrite !pe_removes_correct.
-  destruct (inbP _ _ eqb_stringP V (pe_compare pe_st1 pe_st2)).
+  destruct (inbP _ _ String.eqb_spec V (pe_compare pe_st1 pe_st2)).
   - reflexivity.
   - apply pe_compare_correct. auto. Qed.
 
@@ -723,7 +741,7 @@ Fixpoint assign (pe_st : pe_state) (ids : list string) : com :=
     the partial state. *)
 
 Definition assigned (pe_st:pe_state) (ids : list string) (st:state) : state :=
-  fun V => if inb eqb_string V ids then
+  fun V => if inb String.eqb V ids then
                 match pe_lookup pe_st V with
                 | Some n => n
                 | None => st V
@@ -735,7 +753,7 @@ Theorem assign_removes: forall pe_st ids st,
   pe_update (assigned pe_st ids st) (pe_removes pe_st ids).
 Proof. intros pe_st ids st. apply functional_extensionality. intros V.
   rewrite !pe_update_correct. rewrite pe_removes_correct. unfold assigned.
-  destruct (inbP _ _ eqb_stringP V ids); destruct (pe_lookup pe_st V); reflexivity.
+  destruct (inbP _ _ String.eqb_spec V ids); destruct (pe_lookup pe_st V); reflexivity.
 Qed.
 
 Lemma ceval_extensionality: forall c st st1 st2,
@@ -752,13 +770,13 @@ Proof. intros pe_st ids st. induction ids as [| V ids]; simpl.
     + (* Some *) eapply E_Seq. apply IHids. unfold assigned. simpl.
       eapply ceval_extensionality. apply E_Asgn. simpl. reflexivity.
       intros V0. unfold t_update.  compare V V0.
-      * (* equal *) rewrite <- Heqlookup. rewrite <- eqb_string_refl. reflexivity.
+      * (* equal *) rewrite <- Heqlookup. rewrite String.eqb_refl. reflexivity.
       * (* not equal *) rewrite false_eqb_string; simpl; congruence.
     + (* None *) eapply ceval_extensionality. apply IHids.
       unfold assigned. intros V0. simpl. compare V V0.
       * (* equal *) rewrite <- Heqlookup.
-        rewrite <- eqb_string_refl.
-        destruct (inbP _ _ eqb_stringP V ids); reflexivity.
+        rewrite String.eqb_refl.
+        destruct (inbP _ _ String.eqb_spec V ids); reflexivity.
       * (* not equal *) rewrite false_eqb_string; simpl; congruence.
 Qed.
 
@@ -793,7 +811,7 @@ Inductive pe_com : com -> pe_state -> com -> pe_state -> Prop :=
       c1 / pe_st ==> c1' / pe_st' ->
       <{if b1 then c1 else c2 end}> / pe_st ==> c1' / pe_st'
   | PE_IfFalse : forall pe_st pe_st' b1 c1 c2 c2',
-      pe_bexp pe_st b1 = BFalse ->
+      pe_bexp pe_st b1 = <{ false }> ->
       c2 / pe_st ==> c2' / pe_st' ->
       <{if b1 then c1 else c2 end}> / pe_st ==> c2' / pe_st'
   | PE_If : forall pe_st pe_st1 pe_st2 b1 c1 c2 c1' c2',
@@ -869,8 +887,6 @@ Inductive pe_ceval
 
 Local Hint Constructors pe_ceval : core.
 
-(* NOTATION : IY -- The "If" case line spacing looks a little off---what are the line
-   break insert rules for Imp? *)
 Theorem pe_com_complete:
   forall c pe_st pe_st' c', c / pe_st ==> c' / pe_st' ->
   forall st st'',
@@ -904,8 +920,6 @@ Proof. intros c pe_st pe_st' c' Hpe.
       rewrite <- assign_removes. eassumption.
 Qed.
 
-(* NOTATION : IY -- Note : In the PE_AsgnDynamic/If cases, "=[ ]=>" breaks in a weird
-   way. *)
 Theorem pe_com_sound:
   forall c pe_st pe_st' c', c / pe_st ==> c' / pe_st' ->
   forall st st'',
@@ -1048,7 +1062,7 @@ Inductive pe_com : com -> pe_state -> com -> pe_state -> com -> Prop :=
             / pe_removes pe_st1 (pe_compare pe_st1 pe_st2)
             / c''
   | PE_WhileFalse : forall pe_st b1 c1,
-      pe_bexp pe_st b1 = BFalse ->
+      pe_bexp pe_st b1 = <{ false }> ->
       <{while b1 do c1 end}> / pe_st ==> <{skip}> / pe_st / <{skip}>
   | PE_WhileTrue : forall pe_st pe_st' pe_st'' b1 c1 c1' c2' c2'',
       pe_bexp pe_st b1 = <{ true }> ->
@@ -1083,7 +1097,7 @@ Inductive pe_com : com -> pe_state -> com -> pe_state -> com -> Prop :=
       (* Because we have an infinite loop, we should actually
          start to throw away the rest of the program:
          (while b1 do c1 end) / pe_st
-         ==> skip / pe_st / (while BTrue do skip end) *)
+         ==> skip / pe_st / (while true do skip end) *)
   | PE_WhileFixed : forall pe_st pe_st' pe_st'' b1 c1 c1' c2',
       pe_bexp pe_st b1 <> <{ false }> ->
       pe_bexp pe_st b1 <> <{ true }> ->
@@ -1144,13 +1158,13 @@ Proof. erewrite f_equal2 with (f := fun c st => _ / _ ==> c / st / <{skip}>).
 Example pe_loop_example3:
   <{Z := 3; subtract_slowly}> / []
   ==> <{skip;
-       if ~(X = 0) then
+       if X <> 0 then
          (skip; X := X - 1);
-         if ~(X = 0) then
+         if X <> 0 then
            (skip; X := X - 1);
-           if ~(X = 0) then
+           if X <> 0 then
              (skip; X := X - 1);
-             while ~(X = 0) do
+             while X <> 0 do
                (skip; X := X - 1); skip
              end;
              skip; Z := 0
@@ -1659,4 +1673,4 @@ Proof. intros.
       eapply E_Some; eauto. apply pe_block_correct. apply Hkeval.
 Qed.
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)

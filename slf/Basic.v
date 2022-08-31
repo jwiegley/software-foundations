@@ -159,6 +159,12 @@ Proof.
   xsimpl.
 Qed.
 
+(** The reader may be curious to know what the notation [PRE H CODE F POST Q]
+    stands for, and what the x-tactics are doing. Everything will be explaiend
+    throughout the course. This chapter and the next one focus presenting the
+    features of Separation Logic, and on showing how x-tactics can be used to
+    verify programs in Separation Logic. *)
+
 (** This completes the verification of the lemma [triple_incr], which
     establishes a formal specification for the increment function. Before
     moving on to another function, we associate using the command shown below
@@ -169,11 +175,29 @@ Qed.
 
 Hint Resolve triple_incr : triple.
 
-(** The reader may be curious to know what the notation [PRE H CODE F POST Q]
-    stands for, and what the x-tactics are doing. Everything will be explaiend
-    throughout the course. This chapter and the next one focus presenting the
-    features of Separation Logic, and on showing how x-tactics can be used to
-    verify programs in Separation Logic. *)
+(** To minimize the amount of syntactic noise in specifications, we leverage
+    an advanced feature of Coq's coercion mechanism. Concretely, instead of
+    writing the specification in the form [triple <{ incr p }> ...], we write
+    it in the form [triple (incr p) ...], that is, with just parentheses.
+    Thanks to the coercion mecanism, explained in more details in [Rules],
+    when Coq sees a "program value" [incr] being applied to an argument [p],
+    it automatically interprets this as a "program function call" of [incr]
+    to [p]. Thus, the specification of the increment function can be written
+    as follows. *)
+
+Lemma triple_incr' : forall (p:loc) (n:int),
+  triple (incr p)
+    (p ~~> n)
+    (fun _ => (p ~~> (n+1))).
+Proof.
+  (* Here, to view coercions, use [Set Printing Coercions.], or in CoqIDE use
+     [Shift+Alt+C], which corresponds to the menu View / Display Coerctions. *)
+  xwp. xapp. xapp. xapp. xsimpl.
+Qed.
+
+(** The existence of implicit coercions might be a little confusing at times,
+    yet coercions make specifications so much more readable that it would
+    be a pity to not exploit them. *)
 
 (* ================================================================= *)
 (** ** A Function with a Return Value *)
@@ -219,7 +243,7 @@ Definition example_let : val :=
     and wait until chapter [Rules] to learn about coercions. *)
 
 Lemma triple_example_let : forall (n:int),
-  triple <{ example_let n }>
+  triple (example_let n)
     \[]
     (fun r => \[r = 2*n]).
 
@@ -232,23 +256,6 @@ Lemma triple_example_let : forall (n:int),
     that this course leverages TLC for enhanced definitions and tactics. *)
 
 Proof.
-  xwp. xapp. xapp. xapp. xsimpl. math.
-Qed.
-
-(** From here on, we use the command [Proof using] for introducing a proof
-    instead of writing just [Proof]. Doing so enables asynchronous proof
-    checking, a feature that may enable faster processing of scripts.
-    Moreover, to minimize the amount of syntactic noise in specifications, we
-    leverage the coercion mechanism to allow writing the specified term,
-    here [example_let n] simply surrounded with parentheses, as opposed to
-    the heavier form [<{ example_let n }>]. (See [Rules] for details).
-    For example, we would format the previous proof in the following form. *)
-
-Lemma triple_example_let' : forall (n:int),
-  triple (example_let n)
-    \[]
-    (fun r => \[r = 2*n]).
-Proof using.
   xwp. xapp. xapp. xapp. xsimpl. math.
 Qed.
 
@@ -287,6 +294,10 @@ Definition inplace_double : val :=
 (* FILL IN HERE *)
 
 (** [] *)
+
+(** From here on, we use the command [Proof using] for introducing a proof
+    instead of writing just [Proof]. Doing so enables asynchronous proof
+    checking, a feature that may enable faster processing of scripts. *)
 
 (* ################################################################# *)
 (** * Separation Logic Operators *)
@@ -417,7 +428,7 @@ Proof using.
 Qed.
 
 (** Taking a step back, it may appear somewhat disappointing that we need
-    two different specifications for a same function, depending on whether
+    two different specifications for the same function, depending on whether
     its arguments are aliased on not. There exists advanced features of
     Separation Logic that allow handling the two cases through a single
     specification. However, for such a simple function it is easiest to just
@@ -549,7 +560,7 @@ Parameter triple_ref : forall (v:val),
     we introduce a specific notation, of the form [funloc p => H]. *)
 
 Notation "'funloc' p '=>' H" :=
-  (fun r => \exists p, \[r = val_loc p] \* H)
+  (fun (r:val) => \exists p, \[r = val_loc p] \* H)
   (at level 200, p ident, format "'funloc'  p  '=>'  H").
 
 (** Using this notation, the specification [triple_ref] can be reformulated
@@ -780,7 +791,9 @@ End Facto.
 OCaml:
 
     let rec factorec n =
-      if n <= 1 then 1 else n * factorec (n-1)
+      if n <= 1
+        then 1
+        else n * factorec (n-1)
 
     The corresponding code in A-normal form is slightly more verbose. *)
 
@@ -838,7 +851,7 @@ Lemma triple_factorec : forall n,
     how to set up the induction, how we exploit it for reasoning about the
     recursive call, and how we justify that the recursive call is made on a
     smaller input. *)
-Proof using. unfold factorec.
+Proof using.
 (** We set up a proof by induction on [n] to obtain an induction hypothesis
     for the recursive calls. The well-founded relation [downto 0] captures
     the order on arguments: [downto 0 i j] asserts that [0 <= i < j] holds.
@@ -910,7 +923,7 @@ OCaml:
 
     In the concrete syntax for programs, conditionals without an 'else' branch
     are written [if t1 then t2 end]. The keyword [end] avoids ambiguities in
-    cases where this construct is followed by a semi-column. *)
+    cases where this construct is followed by a semicolon. *)
 
 Definition repeat_incr : val :=
   <{ fix 'f 'p 'm =>
@@ -961,7 +974,7 @@ Proof using.
 (** First, introduces all variables and hypotheses. *)
   intros n m Hm.
 (** Next, generalize those that are not constant during the recursion. We use
-    the TLC tactic [gen], which is a shorthand for [generalized dependent]. *)
+    the TLC tactic [gen], which is a shorthand for [generalize dependent]s. *)
   gen n Hm.
 (** Then, set up the induction. *)
   induction_wf IH: (downto 0) m. unfold downto in IH.
@@ -1096,8 +1109,8 @@ Proof using. (* FILL IN HERE *) Admitted.
       Logic.
     - "Specification triples", of the form [triple t H Q], which relate a term
       [t], a precondition [H], and a postcondition [Q].
-    - "Entailment proof obligations", of the form [H ==> H'] or [Q ===> Q'],
-      which assert that a pre- or post-condition is weaker than another one.
+    - "Entailmens", of the form [H ==> H'] or [Q ===> Q'], which assert that a
+      pre- or post-condition is weaker than another one.
     - "Verification proof obligations", of the form [PRE H CODE F POST Q], which
       are produced by the framework, and capture triples by leveraging a notion
       of "weakest precondition", presented further in the course.
@@ -1153,4 +1166,4 @@ Proof using. (* FILL IN HERE *) Admitted.
     predicates are directly inspired from those introduced in the Ynot project
     [Chlipala et al 2009] (in Bib.v). See chapter [Bib] for references. *)
 
-(* 2021-08-11 15:24 *)
+(* 2022-08-08 17:28 *)

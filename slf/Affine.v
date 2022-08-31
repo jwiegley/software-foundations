@@ -275,17 +275,28 @@ Lemma haffine_hexists : forall A (J:A->hprop),
   haffine (\exists x, (J x)).
 Proof using. introv F1 (x&Hx). applys* F1. Qed.
 
+Lemma haffine_hforall' : forall A (J:A->hprop),
+  (exists x, haffine (J x)) ->
+  haffine (\forall x, (J x)).
+Proof using.
+  introv (x&Hx) M. lets N: hforall_inv M. applys* Hx.
+Qed.
+
+(** The rule [haffine_hforall'] requires the user to provide evidence
+    that there exists at least one value [x] of type [A] for which
+    [haffine (J x)] is true. In practice, the user is generally not
+    interested in proving properties of a specific value [x], but is
+    happy to justify that [J x] is affine for any [x]. The corresponding
+    statement appears below, with an assumption [Inhab A] asserting that
+    the type [A] is inhabited. In practice, the [\forall] quantifier
+    is always invoked on inhabited types, so this is a benign restriction. *)
+
 Lemma haffine_hforall : forall A `{Inhab A} (J:A->hprop),
   (forall x, haffine (J x)) ->
   haffine (\forall x, (J x)).
 Proof using.
-  introv IA F1 Hx. lets N: hforall_inv Hx.
-  applys* F1 (arbitrary (A:=A)).
+  introv IA M. applys haffine_hforall'. exists (arbitrary (A:=A)). applys M.
 Qed.
-
-(** Note, in the last rule above, that the type [A] must be inhabited
-    for this rule to make sense. In practice, the [\forall] quantifier
-    is always invoked on inhabited types, so this is a benign restriction. *)
 
 (** In addition, [haffine (\[P] \* H)] should simplify to [haffine H]
     under the hypothesis [P]. Indeed, if a heap [h] satisfies [\[P] \* H],
@@ -307,7 +318,7 @@ Proof using. introv M. intros h K. rewrite hstar_hpure_l in K. applys* M. Qed.
     This predicate is written [\GC] and named [hgc] in the formalization.
     It holds of any affine heap.
 
-    It can be equivalently defined as [fun h => heap_affine h], or as
+    [\GC] can be equivalently defined as [heap_affine], or as
     [exists H, \[haffine H] \* H]. The latter formulation is expressed
     in terms of existing Separation Logic operators, hence it is easier
     to manipulate in proofs using the [xsimpl] tactic. *)
@@ -347,15 +358,11 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** Together, the introduction and the elimination rule justify
-    the fact that [hgc] could equivalently have been defined as
-    [fun h => heap_affine h]. *)
+(** Together, the introduction and the elimination rule justify the fact that
+    [hgc] could equivalently have been defined as [heap_affine]. *)
 
-Definition hgc' : hprop :=
-  fun h => heap_affine h.
-
-Lemma hgc_eq_hgc' :
-  hgc = hgc'.
+Lemma hgc_eq_heap_affine :
+  hgc = heap_affine.
 Proof using.
   intros. applys himpl_antisym.
   { intros h M. applys* hgc_inv. }
@@ -658,7 +665,8 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** EX1! (triple_haffine_post)
+(** **** Exercise: 1 star, standard, especially useful (triple_haffine_post)
+
     Prove that [triple_haffine_post] is derivable from [triple_hgc_post].
     Hint: unfold the definition of [\GC] using [unfold hgc]. *)
 
@@ -670,7 +678,8 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** EX1? (triple_hgc_post_from_triple_haffine_post)
+(** **** Exercise: 1 star, standard, optional (triple_hgc_post_from_triple_haffine_post)
+
     Reciprocally, prove that [triple_hgc_post] is derivable from
     [triple_haffine_post]. *)
 
@@ -681,7 +690,8 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** EX1? (triple_haffine_pre)
+(** **** Exercise: 1 star, standard, optional (triple_haffine_pre)
+
     Prove that [triple_haffine_pre] is derivable from [triple_hgc_post].
     Hint: exploit the frame rule, and leverage [triple_hgc_post]
     either directly or by invoking its corollary [triple_haffine_post]. *)
@@ -694,7 +704,8 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** EX1? (triple_conseq_frame_hgc)
+(** **** Exercise: 1 star, standard, optional (triple_conseq_frame_hgc)
+
     Prove the combined structural rule [triple_conseq_frame_hgc], which
     extends [triple_conseq_frame] with the discard rule, replacing
     [Q1 \*+ H2 ===> Q] with [Q1 \*+ H2 ===> Q \*+ \GC].
@@ -710,7 +721,8 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** EX1? (triple_ramified_frame_hgc)
+(** **** Exercise: 1 star, standard, optional (triple_ramified_frame_hgc)
+
     Prove the following generalization of the ramified frame rule
     that includes the discard rule.
     Hint: it is a corollary of [triple_conseq_frame_hgc]. Take inspiration
@@ -751,7 +763,8 @@ Qed.
     translates into the entailment [wp t (Q \*+ \GC) ==> wp t Q],
     as we prove next. *)
 
-(** EX1? (wp_hgc_post)
+(** **** Exercise: 1 star, standard, optional (wp_hgc_post)
+
     Prove the discard rule in wp-style.
     Hint: exploit [wp_equiv] and [triple_hgc_post]. *)
 
@@ -934,7 +947,8 @@ Proof using.
   intros. unfold mkstruct. xpull. intros Q'. xsimpl Q'.
 Qed.
 
-(** EX2? (mkstruct_haffine_post)
+(** **** Exercise: 2 stars, standard, optional (mkstruct_haffine_post)
+
     Prove the reformulation of [triple_haffine_post] adapted to [mkstruct],
     for discarding an affine piece of postcondition.
     Hint: [haffine] is an opaque definition at this stage; the assumption
@@ -947,7 +961,8 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
-(** EX2? (mkstruct_haffine_pre)
+(** **** Exercise: 2 stars, standard, optional (mkstruct_haffine_pre)
+
     Prove the reformulation of [triple_haffine_pre] adapted to [mkstruct],
     for discarding an affine piece of postcondition. *)
 
@@ -1289,9 +1304,9 @@ End LowLevel.
     floor".
 
     This chapter gives a presentation of Separation Logic featuring a
-    customizable predicate [haffine] for controlling which resources should bedd
+    customizable predicate [haffine] for controlling which resources should be
     treated as affine, and which ones should be treated as linear. This
     direct approach to controlling linearity was introduced in the context of
     CFML, in work by [Guéneau, Jourdan, Charguéraud, and Pottier 2019] (in Bib.v) *)
 
-(* 2021-08-11 15:25 *)
+(* 2022-08-08 17:28 *)

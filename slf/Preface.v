@@ -274,13 +274,8 @@
 
 (** The [Preface] of Software Foundations Volume 1 (_Logical
     Foundations_) describes how to install Coq. The files you are
-    reading have been tested with Coq version 8.13. *)
-
-(** If you use Coq version 8.12, you will first need to patch the sources by
-    executing the following command:
-
-   sed 's/name,/ident,/g' -i LibSepReference.v
-*)
+    reading have been tested with Coq version 8.13, 8.14, 8.15.
+    Versions prior to 8.12 are no longer supported. *)
 
 (* ================================================================= *)
 (** ** Note for CoqIDE Users *)
@@ -333,9 +328,9 @@
     title        =   "Separation Logic Foundations",
     series       =   "Software Foundations",
     volume       =   "6",
-    year         =   "2021",
+    year         =   "2022",
     publisher    =   "Electronic textbook",
-    note         =   {Version 1.1, \URL{http://softwarefoundations.cis.upenn.edu} },
+    note         =   {Version 1.3, \URL{http://softwarefoundations.cis.upenn.edu} },
     }
 *)
 
@@ -347,4 +342,4 @@
     Foundation under the NSF Expeditions grant 1521523, _The Science of Deep
     Specification_. *)
 
-(* 2021-08-11 15:24 *)
+(* 2022-08-08 17:28 *)

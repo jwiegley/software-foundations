@@ -97,6 +97,9 @@ idtac "".
 idtac "Allowed Axioms:".
 idtac "functional_extensionality".
 idtac "FunctionalExtensionality.functional_extensionality_dep".
+idtac "CSeq_congruence".
+idtac "fold_constants_bexp_sound".
+idtac "succ_hastype_nat__hastype_nat".
 idtac "".
 idtac "".
 idtac "********** Summary **********".
@@ -120,6 +123,6 @@ idtac "".
 idtac "********** Advanced **********".
 Abort.
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)

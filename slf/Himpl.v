@@ -1,16 +1,5 @@
 (** * Himpl: Heap Entailment *)
 
-(**
-
-Foundations of Separation Logic
-
-Chapter: "Himpl".
-
-Author: Arthur Charguéraud.
-License: CC-by 4.0.
-
-*)
-
 Set Implicit Arguments.
 From SLF Require LibSepReference.
 From SLF Require Export Hprop.
@@ -213,10 +202,7 @@ Proof using. (* FILL IN HERE *) Admitted.
 
 (** **** Exercise: 1 star, standard, especially useful (himpl_frame_r)
 
-    The monotonicity property of the star operator w.r.t. entailment can
-    also be stated in a symmetric fashion, as shown next. Prove this result.
-    Hint: exploit the transitivity of entailment ([himpl_trans]) and the
-    asymmetric monotonicity result ([himpl_frame_l]). *)
+    Prove [himpl_frame_r], which is the symmetric of [himpl_frame_l]. *)
 
 Lemma himpl_frame_r : forall H1 H2 H2',
   H2 ==> H2' ->
@@ -267,11 +253,6 @@ Proof using. (* FILL IN HERE *) Admitted.
 (** Reciprocally, consider an entailment of the form [(\[P] \* H) ==> H'].
     To establish this entailment, one must prove that [H] entails [H'] under
     the assumption that [P] is true.
-
-    Indeed, the former proposition asserts that if a heap [h] satisfies [H]
-    and that [P] is true, then [h] satisfies [H'], while the latter asserts
-    that if [P] is true, then if a heap [h] satisfies [H] it also
-    satisfies [H'].
 
     The "extraction rule for pure facts in the left of an entailment"
     captures the property that the pure fact [\[P]] can be extracted into
@@ -455,7 +436,141 @@ Module CaseStudy.
 Implicit Types p q : loc.
 Implicit Types n m : int.
 
+(** Quiz: For each entailment relation, indicate (without a Coq proof)
+    whether it is true or false. Solutions appear further on. *)
+
+Parameter case_study_1 : forall p q,
+      p ~~> 3 \* q ~~> 4
+  ==> q ~~> 4 \* p ~~> 3.
+
+Parameter case_study_2 : forall p q,
+      p ~~> 3
+  ==> q ~~> 4 \* p ~~> 3.
+
+Parameter case_study_3 : forall p q,
+      q ~~> 4 \* p ~~> 3
+  ==> p ~~> 4.
+
+Parameter case_study_4 : forall p q,
+      q ~~> 4 \* p ~~> 3
+  ==> p ~~> 3.
+
+Parameter case_study_5 : forall p q,
+      \[False] \* p ~~> 3
+  ==> p ~~> 4 \* q ~~> 4.
+
+Parameter case_study_6 : forall p q,
+      p ~~> 3 \* q ~~> 4
+  ==> \[False].
+
+Parameter case_study_7 : forall p,
+      p ~~> 3 \* p ~~> 4
+  ==> \[False].
+
+Parameter case_study_8 : forall p,
+      p ~~> 3 \* p ~~> 3
+  ==> \[False].
+
+Parameter case_study_9 : forall p,
+      p ~~> 3
+  ==> \exists n, p ~~> n.
+
+Parameter case_study_10 : forall p,
+      exists n, p ~~> n
+  ==> p ~~> 3.
+
+Parameter case_study_11 : forall p,
+      \exists n, p ~~> n \* \[n > 0]
+  ==> \exists n, \[n > 1] \* p ~~> (n-1).
+
+Parameter case_study_12 : forall p q,
+      p ~~> 3 \* q ~~> 3
+  ==> \exists n, p ~~> n \* q ~~> n.
+
+Parameter case_study_13 : forall p n,
+  p ~~> n \* \[n > 0] \* \[n < 0] ==> p ~~> n \* p ~~> n.
+
 End CaseStudy.
+
+Module CaseStudyAnswers.
+
+(** The answers to the quiz are as follows.
+
+    1. True, by commutativity.
+
+    2. False, because one cell does not entail two cells.
+
+    3. False, because one cell does not entail two cells.
+
+    4. False, because one cell does not entail two cells.
+
+    5. True, because \[False] entails anything.
+
+    6. False, because a satisfiable heap predicate does not entail \[False].
+
+    7. True, because a cell cannot be starred with itself.
+
+    8. True, because a cell cannot be starred with itself.
+
+    9. True, by instantiating [n] with [3].
+
+    10. False, because [n] could be something else than [3].
+
+    11. True, by instantiating [n] in RHS with [n+1] for the [n] of the LHS.
+
+    12. True, by instantiating [n] with [3].
+
+    13. True, because it is equivalent to [\[False] ==> \[False]].
+
+    Proofs for the true results appear below.
+*)
+
+Implicit Types p q : loc.
+Implicit Types n m : int.
+
+Lemma case_study_1 : forall p q,
+      p ~~> 3 \* q ~~> 4
+  ==> q ~~> 4 \* p ~~> 3.
+Proof using. xsimpl. Qed.
+
+Lemma case_study_5 : forall p q,
+      \[False] \* p ~~> 3
+  ==> p ~~> 4 \* q ~~> 4.
+Proof using. xsimpl. Qed.
+
+Lemma case_study_7 : forall p,
+      p ~~> 3 \* p ~~> 4
+  ==> \[False].
+Proof using. intros. xchange (hstar_hsingle_same_loc p). Qed.
+
+Lemma case_study_8 : forall p,
+      p ~~> 3 \* p ~~> 3
+  ==> \[False].
+Proof using. intros. xchange (hstar_hsingle_same_loc p). Qed.
+
+Lemma case_study_9 : forall p,
+      p ~~> 3
+  ==> \exists n, p ~~> n.
+Proof using. xsimpl. Qed.
+
+Lemma case_study_11 : forall p,
+      \exists n, p ~~> n \* \[n > 0]
+  ==> \exists n, \[n > 1] \* p ~~> (n-1).
+Proof using.
+  intros. xpull. intros n Hn. xsimpl (n+1).
+  math. math.
+Qed.
+
+Lemma case_study_12 : forall p q,
+      p ~~> 3 \* q ~~> 3
+  ==> \exists n, p ~~> n \* q ~~> n.
+Proof using. xsimpl. Qed.
+
+Lemma case_study_13 : forall p n,
+  p ~~> n \* \[n > 0] \* \[n < 0] ==> p ~~> n \* p ~~> n.
+Proof using. intros. xsimpl. intros Hn1 Hn2. false. math. Qed.
+
+End CaseStudyAnswers.
 
 (* ================================================================= *)
 (** ** Proving Entailments by Hand *)
@@ -489,8 +604,9 @@ Proof using. (* FILL IN HERE *) Admitted.
 (** **** Exercise: 3 stars, standard, optional (himpl_example_2)
 
     Prove the example entailment below.
-    Hint: use [himpl_hstar_hpure_r] to extract pure facts, once they
-    appear at the head of the left-hand side of the entailment. *)
+    Hint: use [himpl_hstar_hpure_l] to extract pure facts, once they
+    appear at the head of the left-hand side of the entailment.
+    For arithmetic inequalities, use the [math] tactic. *)
 
 Lemma himpl_example_2 : forall p1 p2 p3 n,
       p1 ~~> 6 \* \[n > 0] \* p2 ~~> 7 \* \[n < 0]
@@ -721,10 +837,7 @@ Lemma himpl_example_4 : forall (p:loc),
   \exists (m:int), p ~~> (m + 1).
 Proof using.
   intros. (* observe that [xsimpl] here does not work well. *)
-  xpull. intros n. xsimpl (n-1).
-  replace (n-1+1) with n. { auto. } { math. }
-  (* variant for the last line:
-  applys_eq himpl_refl. fequal. math. *)
+  xpull. intros n. xsimpl (n-1). math.
 Qed.
 
 Lemma himpl_example_5 : forall (H:hprop),
@@ -984,26 +1097,12 @@ Lemma triple_conseq' : forall t H Q H' Q',
 Proof using.
   (* No need to follow through this low-level proof. *)
   introv M WH WQ. rewrite triple_iff_triple_lowlevel in *.
-  intros h1 h2 D HH. forwards (v&h1'&D'&R&HQ): M D. applys WH HH.
-  exists v h1'. splits~. applys WQ HQ.
+  intros h1 h2 D HH. forwards (h1'&v&D'&R&HQ): M D. applys WH HH.
+  exists h1' v. splits~. applys WQ HQ.
 Qed.
 
-(** An alternative proof consists of first establishing the consequence
-    rule for the [hoare] judgment, then derive its generalization to
-    the [triple] judgment of Separation Logic. *)
-
-(** **** Exercise: 3 stars, standard, especially useful (hoare_conseq)
-
-    Prove the consequence rule for Hoare triples. *)
-
-Lemma hoare_conseq : forall t H Q H' Q',
-  hoare t H' Q' ->
-  H ==> H' ->
-  Q' ===> Q ->
-  hoare t H Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
-(** [] *)
+(** An alternative proof leverages the consequence rule for the [hoare]
+    judgment, namely lemma [hoare_conseq]. *)
 
 (** **** Exercise: 2 stars, standard, especially useful (triple_conseq)
 
@@ -1060,13 +1159,10 @@ Qed.
 (** **** Exercise: 2 stars, standard, especially useful (triple_hexists)
 
     Prove the extraction rule [triple_hexists].
-    Hint: start by stating and proving the corresponding
-    lemma for [hoare] triples. *)
+    Hint: start by stating and proving The corresponding lemma for
+    [hoare] triples, named [hoare_hexists]. *)
 
-Lemma hoare_hexists : forall t (A:Type) (J:A->hprop) Q,
-  (forall x, hoare t (J x) Q) ->
-  hoare t (\exists x, J x) Q.
-Proof using. introv M. intros h (x&Hh). applys M Hh. Qed.
+(* FILL IN HERE *)
 
 Lemma triple_hexists : forall t (A:Type) (J:A->hprop) Q,
   (forall x, triple t (J x) Q) ->
@@ -1212,4 +1308,4 @@ End AlternativeExistentialRule.
     http://www.chargueraud.org/research/2020/seq_seplogic/seq_seplogic.pdf
     though it makes sense to wait until chapter [Wand] for reading it. *)
 
-(* 2021-08-11 15:24 *)
+(* 2022-08-08 17:28 *)

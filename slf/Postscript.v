@@ -38,8 +38,9 @@
 (** Ideas of Separation Logic have had significant influence on the field
     of programming languages from various perspectives. For a broad survey
     of Separation Logic, we refer to Peter O'Hearn's CACM paper [2019].
-    https://dl.acm.org/doi/10.1145/3211968 (make sure to also download
-    the "supplementary material" link at the bottom of the page).
+    https://dl.acm.org/doi/10.1145/3211968
+    (Make sure to also download the "supplementary material" link at the bottom
+    of the page.)
 
     Here is a non-exhaustive list of active projects leveraging Separation
     Logic.
@@ -52,8 +53,8 @@
     - The programming language "Rust" features a type system with "borrows", a
       notion directly inspired by Separation Logic.
 
-    - The tool "VeriFast" targets Java programs.
-      https://people.cs.kuleuven.be/~bart.jacobs/verifast and
+    - The tool "VeriFast" targets C and Java programs.
+      https://people.cs.kuleuven.be/~bart.jacobs/verifast  and
       https://github.com/verifast/verifast
 
     - The tool "Verifiable C" tool, from the VST project, targets the
@@ -128,7 +129,12 @@
     - Andrew Appel, Lars Birkedal, Adam Chlipala, Magnus Myreen, Gerwin Klein,
       Peter Lammich, and Zhong Shao, who kindly answered questions on related
       work aspects.
-    - Jonathan Leivent for reporting typos on the beta-version of this course.
+
+   Thanks also to users who contributed feedback and helped fixing typos:
+    - Jonathan Leivent
+    - Ori Lahav
+    - Shachar Itzhaky.
+
 *)
 
-(* 2021-08-11 15:25 *)
+(* 2022-08-08 17:28 *)

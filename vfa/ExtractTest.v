@@ -50,7 +50,7 @@ idtac "-------------------  lookup_insert_eq  --------------------".
 idtac " ".
 
 idtac "#> lookup_insert_eq".
-idtac "Possible points: 2".
+idtac "Possible points: 1".
 check_type @lookup_insert_eq (
 (forall (V : Type) (default : V) (t : tree V) (k : key) (v : V),
  @lookup V default k (@insert V k v t) = v)).
@@ -64,7 +64,7 @@ idtac "-------------------  lookup_insert_neq  --------------------".
 idtac " ".
 
 idtac "#> lookup_insert_neq".
-idtac "Possible points: 3".
+idtac "Possible points: 2".
 check_type @lookup_insert_neq (
 (forall (V : Type) (default : V) (t : tree V) (k k' : key) (v : V),
  k <> k' -> @lookup V default k' (@insert V k v t) = @lookup V default k' t)).
@@ -76,8 +76,8 @@ idtac " ".
 
 idtac " ".
 
-idtac "Max points - standard: 8".
-idtac "Max points - advanced: 8".
+idtac "Max points - standard: 6".
+idtac "Max points - advanced: 6".
 idtac "".
 idtac "Allowed Axioms:".
 idtac "functional_extensionality".
@@ -120,6 +120,6 @@ idtac "".
 idtac "********** Advanced **********".
 Abort.
 
-(* 2021-08-11 15:16 *)
+(* 2022-08-08 17:36 *)
 
-(* 2021-08-11 15:16 *)
+(* 2022-08-08 17:36 *)

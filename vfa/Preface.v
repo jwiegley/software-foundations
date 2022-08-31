@@ -69,7 +69,7 @@
 
 (** Coq runs on Windows, Linux, and OS X.  The Preface of Volume 1
     describes the Coq installation you will need.  This edition was
-    built with Coq 8.12.
+    built with Coq 8.15.
 
     In addition, two of the chapters ask you to compile and run an
     OCaml program; having OCaml installed on your computer is helpful,
@@ -148,9 +148,9 @@
     title        =   "Verified Functional Algorithms",
     series       =   "Software Foundations",
     volume       =   "3",
-    year         =   "2021",
+    year         =   "2022",
     publisher    =   "Electronic textbook",
-    note         =   {Version 1.5.1, \URL{http://softwarefoundations.cis.upenn.edu} },
+    note         =   {Version 1.5.2, \URL{http://softwarefoundations.cis.upenn.edu} },
     }
 *)
 
@@ -162,4 +162,4 @@
     NSF Expeditions grant 1521523, _The Science of Deep
     Specification_. *)
 
-(* 2021-08-11 15:15 *)
+(* 2022-08-08 17:36 *)

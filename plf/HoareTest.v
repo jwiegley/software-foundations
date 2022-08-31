@@ -92,9 +92,8 @@ idtac " ".
 idtac "#> assn_sub_ex1'".
 idtac "Possible points: 1".
 check_type @assn_sub_ex1' (
-({{fun st : state => Aexp_of_aexp (AId X) st <= Aexp_of_nat 5 st}}
- X := (ANum 2) * (AId X)
- {{fun st : state => Aexp_of_aexp (AId X) st <= Aexp_of_nat 10 st}})).
+({{Aexp_of_aexp (AId X) <= Aexp_of_nat 5}} X := (ANum 2) * (AId X)
+ {{Aexp_of_aexp (AId X) <= Aexp_of_nat 10}})).
 idtac "Assumptions:".
 Abort.
 Print Assumptions assn_sub_ex1'.
@@ -104,11 +103,10 @@ idtac " ".
 idtac "#> assn_sub_ex2'".
 idtac "Possible points: 1".
 check_type @assn_sub_ex2' (
-({{(fun st0 : state => (Aexp_of_nat 0 st0 <= Aexp_of_nat 3 st0)%nat) /\
-   (fun st0 : state => (Aexp_of_nat 3 st0 <= Aexp_of_nat 5 st0)%nat)}}
+({{Aexp_of_nat 0 <= Aexp_of_nat 3 /\ Aexp_of_nat 3 <= Aexp_of_nat 5}}
  X := (ANum 3)
- {{(fun st0 : state => (Aexp_of_nat 0 st0 <= Aexp_of_aexp (AId X) st0)%nat) /\
-   (fun st0 : state => (Aexp_of_aexp (AId X) st0 <= Aexp_of_nat 5 st0)%nat)}})).
+ {{Aexp_of_nat 0 <= Aexp_of_aexp (AId X) /\
+   Aexp_of_aexp (AId X) <= Aexp_of_nat 5}})).
 idtac "Assumptions:".
 Abort.
 Print Assumptions assn_sub_ex2'.
@@ -122,8 +120,8 @@ idtac "#> hoare_asgn_example4".
 idtac "Possible points: 2".
 check_type @hoare_asgn_example4 (
 ({{assert_of_Prop True}} X := (ANum 1); Y := (ANum 2)
- {{(fun st0 : state => (Aexp_of_aexp (AId X) st0 = Aexp_of_nat 1 st0)%type) /\
-   (fun st0 : state => (Aexp_of_aexp (AId Y) st0 = Aexp_of_nat 2 st0)%type)}})).
+ {{Aexp_of_aexp (AId X) = Aexp_of_nat 1 /\
+   Aexp_of_aexp (AId Y) = Aexp_of_nat 2}})).
 idtac "Assumptions:".
 Abort.
 Print Assumptions hoare_asgn_example4.
@@ -136,9 +134,8 @@ idtac " ".
 idtac "#> swap_exercise".
 idtac "Possible points: 3".
 check_type @swap_exercise (
-({{fun st : state => Aexp_of_aexp (AId X) st <= Aexp_of_aexp (AId Y) st}}
- swap_program
- {{fun st : state => Aexp_of_aexp (AId Y) st <= Aexp_of_aexp (AId X) st}})).
+({{Aexp_of_aexp (AId X) <= Aexp_of_aexp (AId Y)}} swap_program
+ {{Aexp_of_aexp (AId Y) <= Aexp_of_aexp (AId X)}})).
 idtac "Assumptions:".
 Abort.
 Print Assumptions swap_exercise.
@@ -149,13 +146,13 @@ idtac "-------------------  invalid_triple  --------------------".
 idtac " ".
 
 idtac "#> invalid_triple".
+idtac "Advanced".
 idtac "Possible points: 6".
 check_type @invalid_triple (
 (~
  (forall (a : aexp) (n : nat),
-  {{fun st : state => Aexp_of_aexp a st = Aexp_of_nat n st}}
-  X := (ANum 3); Y := a
-  {{fun st : state => Aexp_of_aexp (AId Y) st = Aexp_of_nat n st}}))).
+  {{Aexp_of_aexp a = Aexp_of_nat n}} X := (ANum 3); Y := a
+  {{Aexp_of_aexp (AId Y) = Aexp_of_nat n}}))).
 idtac "Assumptions:".
 Abort.
 Print Assumptions invalid_triple.
@@ -171,11 +168,7 @@ check_type @if_minus_plus (
 ({{assert_of_Prop True}}
  if (AId X) <= (AId Y) then Z := (AId Y) - (AId X)
  else Y := (AId X) + (AId Z) end
- {{fun st : state =>
-   Aexp_of_aexp (AId Y) st =
-   mkAexp
-     (fun st0 : state =>
-      (Aexp_of_aexp (AId X) st0 + Aexp_of_aexp (AId Z) st0)%nat) st}})).
+ {{Aexp_of_aexp (AId Y) = Aexp_of_aexp (AId X) + Aexp_of_aexp (AId Z)}})).
 idtac "Assumptions:".
 Abort.
 Print Assumptions if_minus_plus.
@@ -222,26 +215,13 @@ idtac "#> If1.hoare_if1_good".
 idtac "Possible points: 2".
 check_type @If1.hoare_if1_good (
 (If1.hoare_triple
-   (fun st : state =>
-    mkAexp
-      (fun st0 : state =>
-       (Aexp_of_aexp (AId X) st0 + Aexp_of_aexp (AId Y) st0)%nat) st =
-    Aexp_of_aexp (AId Z) st)
-   (If1.CIf1 <{ ~ (AId Y) = (ANum 0) }> (If1.CAsgn X <{ (AId X) + (AId Y) }>))
-   (fun st : state => Aexp_of_aexp (AId X) st = Aexp_of_aexp (AId Z) st))).
+   (Aexp_of_aexp (AId X) + Aexp_of_aexp (AId Y) = Aexp_of_aexp (AId Z))
+   (If1.CIf1 <{ (AId Y) <> (ANum 0) }> (If1.CAsgn X <{ (AId X) + (AId Y) }>))
+   (Aexp_of_aexp (AId X) = Aexp_of_aexp (AId Z)))).
 idtac "Assumptions:".
 Abort.
 Print Assumptions If1.hoare_if1_good.
 Goal True.
-idtac " ".
-
-idtac "-------------------  hoare_repeat  --------------------".
-idtac " ".
-
-idtac "#> Manually graded: hoare_repeat".
-idtac "Advanced".
-idtac "Possible points: 6".
-print_manual_grade manual_grade_for_hoare_repeat.
 idtac " ".
 
 idtac "-------------------  hoare_havoc  --------------------".
@@ -273,6 +253,49 @@ Print Assumptions Himp.havoc_post.
 Goal True.
 idtac " ".
 
+idtac "-------------------  assert_vs_assume  --------------------".
+idtac " ".
+
+idtac "#> HoareAssertAssume.assert_assume_differ".
+idtac "Possible points: 1".
+check_type @HoareAssertAssume.assert_assume_differ (
+(exists (P : Assertion) (b : bexp) (Q : Assertion),
+   HoareAssertAssume.hoare_triple P (HoareAssertAssume.CAssume b) Q /\
+   ~ HoareAssertAssume.hoare_triple P (HoareAssertAssume.CAssert b) Q)).
+idtac "Assumptions:".
+Abort.
+Print Assumptions HoareAssertAssume.assert_assume_differ.
+Goal True.
+idtac " ".
+
+idtac "#> HoareAssertAssume.assert_implies_assume".
+idtac "Possible points: 1".
+check_type @HoareAssertAssume.assert_implies_assume (
+(forall (P : Assertion) (b : bexp) (Q : Assertion),
+ HoareAssertAssume.hoare_triple P (HoareAssertAssume.CAssert b) Q ->
+ HoareAssertAssume.hoare_triple P (HoareAssertAssume.CAssume b) Q)).
+idtac "Assumptions:".
+Abort.
+Print Assumptions HoareAssertAssume.assert_implies_assume.
+Goal True.
+idtac " ".
+
+idtac "#> HoareAssertAssume.assert_assume_example".
+idtac "Possible points: 4".
+check_type @HoareAssertAssume.assert_assume_example (
+(HoareAssertAssume.hoare_triple (assert_of_Prop True)
+   (HoareAssertAssume.CSeq
+      (HoareAssertAssume.CAssume <{ (AId X) = (ANum 1) }>)
+      (HoareAssertAssume.CSeq
+         (HoareAssertAssume.CAsgn X <{ (AId X) + (ANum 1) }>)
+         (HoareAssertAssume.CAssert <{ (AId X) = (ANum 2) }>)))
+   (assert_of_Prop True))).
+idtac "Assumptions:".
+Abort.
+Print Assumptions HoareAssertAssume.assert_assume_example.
+Goal True.
+idtac " ".
+
 idtac " ".
 
 idtac "Max points - standard: 31".
@@ -281,6 +304,9 @@ idtac "".
 idtac "Allowed Axioms:".
 idtac "functional_extensionality".
 idtac "FunctionalExtensionality.functional_extensionality_dep".
+idtac "CSeq_congruence".
+idtac "fold_constants_bexp_sound".
+idtac "succ_hastype_nat__hastype_nat".
 idtac "".
 idtac "".
 idtac "********** Summary **********".
@@ -308,8 +334,6 @@ idtac "---------- hoare_asgn_example4 ---------".
 Print Assumptions hoare_asgn_example4.
 idtac "---------- swap_exercise ---------".
 Print Assumptions swap_exercise.
-idtac "---------- invalid_triple ---------".
-Print Assumptions invalid_triple.
 idtac "---------- if_minus_plus ---------".
 Print Assumptions if_minus_plus.
 idtac "---------- If1.if1true_test ---------".
@@ -324,14 +348,20 @@ idtac "---------- Himp.hoare_havoc ---------".
 Print Assumptions Himp.hoare_havoc.
 idtac "---------- Himp.havoc_post ---------".
 Print Assumptions Himp.havoc_post.
+idtac "---------- HoareAssertAssume.assert_assume_differ ---------".
+Print Assumptions HoareAssertAssume.assert_assume_differ.
+idtac "---------- HoareAssertAssume.assert_implies_assume ---------".
+Print Assumptions HoareAssertAssume.assert_implies_assume.
+idtac "---------- HoareAssertAssume.assert_assume_example ---------".
+Print Assumptions HoareAssertAssume.assert_assume_example.
 idtac "".
 idtac "********** Advanced **********".
 idtac "---------- hoare_asgn_fwd ---------".
 Print Assumptions hoare_asgn_fwd.
-idtac "---------- hoare_repeat ---------".
-idtac "MANUAL".
+idtac "---------- invalid_triple ---------".
+Print Assumptions invalid_triple.
 Abort.
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)

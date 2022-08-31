@@ -96,8 +96,10 @@ idtac "#> wp_invariant".
 idtac "Possible points: 2".
 check_type @wp_invariant (
 (forall (b : Imp.bexp) (c : Imp.com) (Q : Hoare.Assertion),
- valid (fun st : Imp.state => wp (Imp.CWhile b c) Q st /\ Hoare.bassn b st) c
-   (wp (Imp.CWhile b c) Q))).
+ valid
+   (fun st : Imp.state =>
+    (wp (Imp.CWhile b c) Q : Hoare.Assertion) st /\
+    (Hoare.bassn b : Hoare.Assertion) st) c (wp (Imp.CWhile b c) Q))).
 idtac "Assumptions:".
 Abort.
 Print Assumptions wp_invariant.
@@ -126,6 +128,9 @@ idtac "".
 idtac "Allowed Axioms:".
 idtac "functional_extensionality".
 idtac "FunctionalExtensionality.functional_extensionality_dep".
+idtac "CSeq_congruence".
+idtac "fold_constants_bexp_sound".
+idtac "succ_hastype_nat__hastype_nat".
 idtac "".
 idtac "".
 idtac "********** Summary **********".
@@ -155,6 +160,6 @@ idtac "".
 idtac "********** Advanced **********".
 Abort.
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:31 *)

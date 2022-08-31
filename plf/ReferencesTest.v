@@ -51,17 +51,37 @@ idtac " ".
 idtac "-------------------  cyclic_store  --------------------".
 idtac " ".
 
-idtac "#> Manually graded: STLCRef.cyclic_store".
-idtac "Possible points: 2".
-print_manual_grade STLCRef.manual_grade_for_cyclic_store.
+idtac "#> STLCRef.cyclic_store".
+idtac "Possible points: 3".
+check_type @STLCRef.cyclic_store (
+(exists t : STLCRef.tm,
+   STLCRef.multistep (t, @nil STLCRef.tm)
+     (STLCRef.tm_unit,
+     (STLCRef.tm_abs STLCRef.x STLCRef.Ty_Nat
+        (STLCRef.tm_app (STLCRef.tm_deref (STLCRef.tm_loc 1))
+           (STLCRef.tm_var STLCRef.x))
+      :: STLCRef.tm_abs STLCRef.x STLCRef.Ty_Nat
+           (STLCRef.tm_app (STLCRef.tm_deref (STLCRef.tm_loc 0))
+              (STLCRef.tm_var STLCRef.x)) :: @nil STLCRef.tm)%list))).
+idtac "Assumptions:".
+Abort.
+Print Assumptions STLCRef.cyclic_store.
+Goal True.
 idtac " ".
 
 idtac "-------------------  store_not_unique  --------------------".
 idtac " ".
 
-idtac "#> Manually graded: STLCRef.store_not_unique".
-idtac "Possible points: 2".
-print_manual_grade STLCRef.manual_grade_for_store_not_unique.
+idtac "#> STLCRef.store_not_unique".
+idtac "Possible points: 3".
+check_type @STLCRef.store_not_unique (
+(exists (st : STLCRef.store) (ST1 ST2 : STLCRef.store_ty),
+   STLCRef.store_well_typed ST1 st /\
+   STLCRef.store_well_typed ST2 st /\ ST1 <> ST2)).
+idtac "Assumptions:".
+Abort.
+Print Assumptions STLCRef.store_not_unique.
+Goal True.
 idtac " ".
 
 idtac "-------------------  preservation_informal  --------------------".
@@ -98,12 +118,15 @@ idtac " ".
 
 idtac " ".
 
-idtac "Max points - standard: 17".
-idtac "Max points - advanced: 17".
+idtac "Max points - standard: 19".
+idtac "Max points - advanced: 19".
 idtac "".
 idtac "Allowed Axioms:".
 idtac "functional_extensionality".
 idtac "FunctionalExtensionality.functional_extensionality_dep".
+idtac "CSeq_congruence".
+idtac "fold_constants_bexp_sound".
+idtac "succ_hastype_nat__hastype_nat".
 idtac "".
 idtac "".
 idtac "********** Summary **********".
@@ -121,10 +144,10 @@ idtac "---------- compact_update ---------".
 idtac "MANUAL".
 idtac "---------- type_safety_violation ---------".
 idtac "MANUAL".
-idtac "---------- cyclic_store ---------".
-idtac "MANUAL".
-idtac "---------- store_not_unique ---------".
-idtac "MANUAL".
+idtac "---------- STLCRef.cyclic_store ---------".
+Print Assumptions STLCRef.cyclic_store.
+idtac "---------- STLCRef.store_not_unique ---------".
+Print Assumptions STLCRef.store_not_unique.
 idtac "---------- preservation_informal ---------".
 idtac "MANUAL".
 idtac "---------- STLCRef.RefsAndNontermination.factorial ---------".
@@ -135,6 +158,6 @@ idtac "".
 idtac "********** Advanced **********".
 Abort.
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:32 *)
 
-(* 2021-08-11 15:11 *)
+(* 2022-08-08 17:32 *)
